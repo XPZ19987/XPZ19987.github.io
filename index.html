@@ -1,192 +1,1110 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>我的技术与育儿博客 - 代码人生*育儿点滴</title><meta name="author" content="王靖雯"><meta name="copyright" content="王靖雯"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="分享技术干货与育儿成长故事">
-<meta property="og:type" content="website">
-<meta property="og:title" content="我的技术与育儿博客">
-<meta property="og:url" content="http://example.com/index.html">
-<meta property="og:site_name" content="我的技术与育儿博客">
-<meta property="og:description" content="分享技术干货与育儿成长故事">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/butterfly-icon.png">
-<meta property="article:author" content="王靖雯">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/img/butterfly-icon.png"><script type="application/ld+json">{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "我的技术与育儿博客",
-  "alternateName": [
-    "代码人生*育儿点滴",
-    "example.com"
-  ],
-  "url": "http://example.com/"
-}</script><link rel="shortcut icon" href="/%5Bobject%20Object%5D"><link rel="canonical" href="http://example.com/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
-    (() => {
-      
-    const saveToLocal = {
-      set: (key, value, ttl) => {
-        if (!ttl) return
-        const expiry = Date.now() + ttl * 86400000
-        localStorage.setItem(key, JSON.stringify({ value, expiry }))
-      },
-      get: key => {
-        const itemStr = localStorage.getItem(key)
-        if (!itemStr) return undefined
-        const { value, expiry } = JSON.parse(itemStr)
-        if (Date.now() > expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return value
-      }
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小鹏子的桌面导航</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* 隐藏Hexo主题元素 */
+    #header, #navbar, #sidebar, #footer, .page-header, .site-nav, .sidebar-widget, .blog-info {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0; width: 0; margin: 0; padding: 0; border: none;
     }
-
-    window.btf = {
-      saveToLocal,
-      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
-        script.onload = script.onreadystatechange = () => {
-          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
-        }
-        script.onerror = reject
-        document.head.appendChild(script)
-      }),
-      getCSS: (url, id) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onload = link.onreadystatechange = () => {
-          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
-        }
-        link.onerror = reject
-        document.head.appendChild(link)
-      }),
-      addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
-        const globalFn = parent.globalFn || {}
-        globalFn[key] = globalFn[key] || {}
-        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
-        parent.globalFn = globalFn
-      }
-    }
-  
-      
-      const activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      const activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
-
-      btf.activateDarkMode = activateDarkMode
-      btf.activateLightMode = activateLightMode
-
-      const theme = saveToLocal.get('theme')
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
-          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
-        
-      
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
-      }
-    
-      
-    const detectApple = () => {
-      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
-        document.documentElement.classList.add('apple')
-      }
+    /* 背景动图设置 */
+    body {
+      font-family: "Microsoft Yahei", "PingFang SC", sans-serif;
+      min-height: 100vh;
+      padding: 30px 20px;
+      position: relative;
+      overflow-x: hidden;
     }
-    detectApple()
+    
+    /* 背景动图层 - 下雨动图 */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      overflow: hidden;
+    }
+    
+    /* 下雨动图背景 */
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://media.giphy.com/media/3o7aTskHEUdgCQAXde/giphy.gif'); /* 下雨动图 */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.7; /* 调整透明度 */
+      filter: blur(1px); /* 轻微模糊，减少对文字阅读的影响 */
+    }
+    
+    /* 渐变遮罩层，增强文字可读性 */
+    .bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(224, 247, 250, 0.9), rgba(178, 235, 242, 0.85));
+      z-index: -1;
+    }
+    
+    /* 内容区域，确保在背景之上 */
+    .top-area, .search-box-container, .site-grid {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 欢迎文字样式 - 修改为小火箭 */
+    .welcome-text {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1565c0;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
+      letter-spacing: 1px;
+    }
+    
+    .welcome-text::after {
+      content: ' 🚀'; /* 改为小火箭 */
+    }
+
+    .top-area {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .clock {
+      font-size: 38px;
+      font-weight: 700;
+      color: #263238;
+      margin-bottom: 8px;
+      text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
+    }
+    .date {
+      font-size: 16px;
+      color: #263238;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+    }
+    .location-weather {
+      font-size: 15px;
+      color: #263238;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
+      min-height: 24px;
+    }
+    .location-weather a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 5px 12px;
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .location-weather a:hover {
+      color: #4285f4;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .location-icon { color: #4285f4; }
+    .weather-icon { color: #ff9800; }
+    .loading {
+      color: #78909c;
+      font-style: italic;
+    }
+    .error {
+      color: #f44336;
+      font-size: 14px;
+    }
+    .refresh-btn {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      color: #263238;
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 5px;
+      padding: 5px 10px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .refresh-btn:hover {
+      color: #4285f4;
+      background: rgba(255, 255, 255, 0.9);
+      transform: rotate(90deg);
+    }
+
+    /* 搜索框样式 - 模仿图片中的设计 */
+    .search-box-container {
+      max-width: 680px;
+      margin: 0 auto 35px auto;
+    }
+    
+    /* 搜索引擎选择器 - 隐藏 */
+    .search-engine-selector {
+      display: none !important; /* 隐藏百度/必应/Google按钮栏 */
+    }
+    
+    .search-box {
+      display: flex;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+    
+    .search-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+    }
+    
+    .search-engine-icon {
+      color: #4285f4;
+      margin-right: 10px;
+      font-size: 16px;
+    }
+    
+    .search-input {
+      flex: 1;
+      padding: 15px 0;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      color: #263238;
+      background: transparent;
+      width: 100%;
+    }
+    
+    .search-input::placeholder { 
+      color: #666; 
+    }
+    
+    .search-dropdown {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      background: rgba(255, 255, 255, 0.9);
+      border-left: 1px solid rgba(66, 133, 244, 0.2);
+      cursor: pointer;
+      min-width: 120px;
+    }
+    
+    .dropdown-label {
+      color: #263238;
+      font-size: 14px;
+      margin-right: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .dropdown-arrow {
+      color: #4285f4;
+      font-size: 12px;
+      transition: transform 0.3s ease;
+    }
+    
+    .search-dropdown:hover .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+    
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      min-width: 150px;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      display: none;
+    }
+    
+    .dropdown-menu.show {
+      display: block;
+    }
+    
+    .dropdown-item {
+      padding: 12px 16px;
+      color: #263238;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+    
+    .dropdown-item:hover {
+      background: rgba(66, 133, 244, 0.1);
+      color: #4285f4;
+    }
+    
+    .dropdown-item.active {
+      background: rgba(66, 133, 244, 0.2);
+      color: #4285f4;
+    }
+    
+    .search-btn {
+      padding: 0 25px;
+      background: #4285f4;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 17px;
+      transition: all 0.2s ease;
+    }
+    
+    .search-btn:hover { 
+      background: #3367d6; 
+    }
+
+    .site-grid {
+      max-width: 1050px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+      gap: 30px 25px;
+      justify-items: center;
+      padding: 0 20px;
+    }
+    .site-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: #263238;
+      text-align: center;
+      width: 85px;
+    }
+    .site-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 25px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      margin-bottom: 12px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .site-item:hover .site-icon {
+      transform: scale(1.15) translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      border-color: rgba(66, 133, 244, 0.4);
+    }
+    .site-name {
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 3px 8px;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(66, 133, 244, 0.2);
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 480px) {
+      .welcome-text { font-size: 18px; }
+      .clock { font-size: 30px; }
+      .location-weather { flex-direction: column; gap: 8px; font-size:14px; }
+      .search-engine-selector { gap: 8px; }
+      .search-engine-btn { padding: 6px 12px; font-size: 12px; }
+      .site-grid { gap: 22px 20px; }
+      .site-icon { width: 48px; height: 48px; font-size:23px; }
+      .search-dropdown { min-width: 100px; padding: 0 10px; }
+      .dropdown-label { font-size: 13px; }
+    }
+    
+    /* 背景切换按钮 */
+    .bg-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      color: #4285f4;
+    }
+    .bg-toggle:hover {
+      background: #fff;
+      transform: scale(1.1);
+      color: #3367d6;
+    }
+  </style>
+</head>
+<body>
+  <!-- 背景动图层 -->
+  <div class="bg-animation" id="bg-animation"></div>
   
-    })()
-  </script><script>const GLOBAL_CONFIG = {
-  root: '/',
-  algolia: undefined,
-  localSearch: undefined,
-  translate: undefined,
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
-  copy: {
-    success: '复制成功',
-    error: '复制失败',
-    noSupport: '浏览器不支持'
-  },
-  relativeDate: {
-    homepage: false,
-    post: false
-  },
-  runtime: '',
-  dateSuffix: {
-    just: '刚刚',
-    min: '分钟前',
-    hour: '小时前',
-    day: '天前',
-    month: '个月前'
-  },
-  copyright: undefined,
-  lightbox: 'null',
-  Snackbar: undefined,
-  infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
-    buttonText: '加载更多'
-  },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: true,
-  isAnchor: false,
-  percent: {
-    toc: true,
-    rightside: false,
-  },
-  autoDarkmode: false
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: '我的技术与育儿博客',
-  isHighlightShrink: false,
-  isToc: false,
-  pageType: 'home'
-}</script><style>
-  /* 【育儿+技术 双适配 全局美化】全部生效，不用改任何内容 */
-  /* 1. 温暖配色（育儿温馨风，不刺眼，技术博客看代码也舒服） */
-  :root { --theme-color: #ff9e7d; --hover-color: #ff7a5c; }
-  a, .post-title a:hover, .menu-item a:hover { color: var(--theme-color) !important; }
-  /* 2. 育儿文章必备：段落首行缩进2字符（中文阅读超舒服，日记感拉满） */
-  .post-content p { text-indent: 2em !important; line-height: 1.8 !important; margin: 0.8em 0 !important; }
-  /* 3. 技术博客必备：代码块美化+复制按钮优化 */
-  figure.highlight { border-radius: 8px; margin: 1em 0; }
-  .highlight-copy-btn { background: var(--theme-color); opacity: 0.8; }
-  /* 4. 全局美化：导航栏、卡片圆角，更柔和 */
-  .card-widget, .recent-post-item { border-radius: 10px; }
-</style>
-<meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/%E6%8A%80%E6%9C%AF/"><i class="fa-fw fas fa-code"></i><span> 技术博客</span></a></div><div class="menus_item"><a class="site-page" href="/categories/%E8%82%B2%E5%84%BF/"><i class="fa-fw fas fa-baby"></i><span> 育儿分享</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签合集</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user-circle"></i><span> 关于博主</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的技术与育儿博客</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/%E6%8A%80%E6%9C%AF/"><i class="fa-fw fas fa-code"></i><span> 技术博客</span></a></div><div class="menus_item"><a class="site-page" href="/categories/%E8%82%B2%E5%84%BF/"><i class="fa-fw fas fa-baby"></i><span> 育儿分享</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 文章归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签合集</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user-circle"></i><span> 关于博主</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">我的技术与育儿博客</h1></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/01/16/%E5%AE%9D%E5%AE%9D1%E5%B2%81%E6%88%90%E9%95%BF%E8%AE%B0%E5%BD%95%EF%BC%9A%E8%A7%A3%E9%94%81%E8%BE%85%E9%A3%9F-%E5%AD%A6%E8%B5%B0%E8%B7%AF%E6%96%B0%E6%8A%80%E8%83%BD/" title="宝宝1岁成长记录：解锁辅食+学走路新技能">宝宝1岁成长记录：解锁辅食+学走路新技能</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2026-01-16T09:00:00.000Z" title="发表于 2026-01-16 17:00:00">2026-01-16</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E8%82%B2%E5%84%BF/">育儿</a></span></div><div class="content">👶 我的小宝贝满1岁啦！时间过得好快，转眼宝宝已经1岁了，最近解锁了好多新技能，记录一下这阶段的成长点滴。 🥣 辅食新尝试最近给宝宝添加了手指食物，比如蒸南瓜条、土豆块，小家伙自己抓着吃的样子超可爱！  ✅ 最爱吃：南瓜泥+米粉 ❌ 暂时不爱：西兰花（可能有点硬） 💡 心得：辅食要循序渐进，观察宝宝的过敏反应，每添加一种新食物等3天再换。  🚶 学走路的小勇士最近开始扶着沙发走路了，虽然走得摇摇晃晃，但每次成功走几步都会开心地笑。  🌟 小技巧：用玩具吸引宝宝向前走，增加他的兴趣 ⚠️ 注意：地面要铺爬行垫，避免磕碰 📸 记录：拍了好多视频，等他长大可以看自己小时候的样子  💌 妈妈的心里话看着宝宝一天天长大，真的很感慨。育儿路上有辛苦也有快乐，希望我的分享能帮到同样在带娃的爸爸妈妈们～ </div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/01/16/Python%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%80%E4%B8%AAHello-World%E7%A8%8B%E5%BA%8F/" title="Python入门教程：第一个Hello World程序">Python入门教程：第一个Hello World程序</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2026-01-16T08:30:00.000Z" title="发表于 2026-01-16 16:30:00">2026-01-16</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></span></div><div class="content">Python入门：编写你的第一个程序大家好，这是我的第一篇技术博客，今天我们来学习如何用Python写出第一个「Hello World」程序。 1. 环境准备确保你已经安装了Python环境，打开终端输入： python --version 如果显示版本号（如 Python 3.12.0），说明安装成功。 2. 编写代码 新建一个 .py 文件（比如 hello.py），输入以下代码： p# 这是注释，不会被执行 print(&quot;Hello, World!&quot;) print(&quot;欢迎来到我的技术博客 🎉&quot;) 3. 运行程序 在终端执行： python hello.py 你会看到终端输出： Hello, World! 欢迎来到我的技术博客 🎉 小结 这就是 Python 最简单的入门程序，后续我会分享更多 Python 进阶技巧和实战项目。  </div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/01/16/hello-world/" title="Hello World">Hello World</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2026-01-16T06:46:08.880Z" title="发表于 2026-01-16 14:46:08">2026-01-16</time></span></div><div class="content">Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new &quot;My New Post&quot;  More info: Writing Run server1$ hexo server  More info: Server Generate static files1$ hexo generate  More info: Generating Deploy to remote sites1$ hexo deploy  More info: Deployment </div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">王靖雯</div><div class="author-info-description">分享技术干货与育儿成长故事</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/16/%E5%AE%9D%E5%AE%9D1%E5%B2%81%E6%88%90%E9%95%BF%E8%AE%B0%E5%BD%95%EF%BC%9A%E8%A7%A3%E9%94%81%E8%BE%85%E9%A3%9F-%E5%AD%A6%E8%B5%B0%E8%B7%AF%E6%96%B0%E6%8A%80%E8%83%BD/" title="宝宝1岁成长记录：解锁辅食+学走路新技能">宝宝1岁成长记录：解锁辅食+学走路新技能</a><time datetime="2026-01-16T09:00:00.000Z" title="发表于 2026-01-16 17:00:00">2026-01-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/16/Python%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%80%E4%B8%AAHello-World%E7%A8%8B%E5%BA%8F/" title="Python入门教程：第一个Hello World程序">Python入门教程：第一个Hello World程序</a><time datetime="2026-01-16T08:30:00.000Z" title="发表于 2026-01-16 16:30:00">2026-01-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/16/hello-world/" title="Hello World">Hello World</a><time datetime="2026-01-16T06:46:08.880Z" title="发表于 2026-01-16 14:46:08">2026-01-16</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
-            <i class="fas fa-folder-open"></i>
-            <span>分类</span>
-            
-          </div>
-          <ul class="card-category-list" id="aside-cat-list">
-            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/"><span class="card-category-list-name">技术</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%82%B2%E5%84%BF/"><span class="card-category-list-name">育儿</span><span class="card-category-list-count">1</span></a></li>
-          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/%E8%82%B2%E5%84%BF%E5%BF%83%E5%BE%97/" style="font-size: 1.1em; color: #999">育儿心得</a> <a href="/tags/%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B/" style="font-size: 1.1em; color: #999">零基础教程</a> <a href="/tags/Python/" style="font-size: 1.1em; color: #999">Python</a> <a href="/tags/%E5%AE%9D%E5%AE%9D%E6%88%90%E9%95%BF/" style="font-size: 1.1em; color: #999">宝宝成长</a> <a href="/tags/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/" style="font-size: 1.1em; color: #999">编程入门</a> <a href="/tags/%E8%BE%85%E9%A3%9F%E6%B7%BB%E5%8A%A0/" style="font-size: 1.1em; color: #999">辅食添加</a></div></div><div class="card-widget card-archives">
-    <div class="item-headline">
-      <i class="fas fa-archive"></i>
-      <span>归档</span>
-      
+  <!-- 渐变遮罩层 -->
+  <div class="bg-overlay" id="bg-overlay"></div>
+  
+  <!-- 背景切换按钮 -->
+  <button class="bg-toggle" id="bg-toggle" title="切换背景">
+    <i class="fas fa-image"></i>
+  </button>
+
+  <div class="top-area">
+    <!-- 欢迎文字 -->
+    <div class="welcome-text" id="welcome-text">欢迎来到小鹏子的网站</div>
+    
+    <div class="clock" id="clock">16:52:50</div>
+    <div class="date" id="date">01月17日 星期六 十一月廿九 乙未</div>
+    <!-- 自动获取位置和天气 -->
+    <div class="location-weather" id="location-weather">
+      <a id="location-link" target="_blank">
+        <i class="fas fa-map-marker-alt location-icon"></i>
+        <span id="location" class="loading">获取位置中...</span>
+      </a>
+      <a id="weather-link" target="_blank">
+        <i class="fas fa-cloud weather-icon"></i>
+        <span id="weather" class="loading">获取天气中...</span>
+      </a>
+      <button class="refresh-btn" id="refresh-btn" title="刷新天气">
+        <i class="fas fa-redo-alt"></i>
+      </button>
     </div>
-  
-    <ul class="card-archive-list">
+  </div>
+
+  <!-- 搜索框区域 -->
+  <div class="search-box-container">
+    <!-- 搜索引擎选择器 - 已隐藏 -->
+    <div class="search-engine-selector" style="display: none;">
+      <button class="search-engine-btn" data-engine="baidu">
+        <i class="fab fa-baidu"></i>
+        百度
+      </button>
+      <button class="search-engine-btn active" data-engine="bing">
+        <i class="fab fa-bing"></i>
+        必应
+      </button>
+      <button class="search-engine-btn" data-engine="google">
+        <i class="fab fa-google"></i>
+        Google
+      </button>
+    </div>
+    
+    <!-- 搜索框 -->
+    <div class="search-box">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-engine-icon" id="search-icon"></i>
+        <input type="text" class="search-input" id="search-input" placeholder="在必应中搜索内容...">
+      </div>
       
-        <li class="card-archive-list-item">
-          <a class="card-archive-list-link" href="/archives/2026/01/">
-            <span class="card-archive-list-date">
-              一月 2026
-            </span>
-            <span class="card-archive-list-count">3</span>
-          </a>
-        </li>
+      <div class="search-dropdown" id="search-dropdown">
+        <span class="dropdown-label" id="dropdown-label">
+          <i class="fab fa-bing"></i>
+          必应
+        </span>
+        <i class="fas fa-chevron-down dropdown-arrow"></i>
+        <div class="dropdown-menu" id="dropdown-menu">
+          <div class="dropdown-item active" data-engine="bing">
+            <i class="fab fa-bing"></i>
+            必应搜索
+          </div>
+          <div class="dropdown-item" data-engine="baidu">
+            <i class="fab fa-baidu"></i>
+            百度搜索
+          </div>
+          <div class="dropdown-item" data-engine="google">
+            <i class="fab fa-google"></i>
+            Google搜索
+          </div>
+        </div>
+      </div>
       
-    </ul>
-  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">3</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-01-17T02:51:51.569Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 王靖雯</span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+      <button class="search-btn" id="search-btn">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="site-grid">
+    <!-- 搜索类网站 -->
+    <a href="https://www.bing.com" target="_blank" class="site-item"><div class="site-icon" style="color: #4285f4;"><i class="fab fa-bing"></i></div><div class="site-name">必应搜索</div></a>
+    
+    <!-- AI助手网站 -->
+    <a href="https://www.doubao.com" target="_blank" class="site-item"><div class="site-icon" style="color: #ff6b6b;"><i class="fas fa-robot"></i></div><div class="site-name">豆包</div></a>
+    <a href="https://www.deepseek.com" target="_blank" class="site-item"><div class="site-icon" style="color: #4ecdc4;"><i class="fas fa-brain"></i></div><div class="site-name">deepseek</div></a>
+    <a href="https://yuanbao.tencent.com" target="_blank" class="site-item"><div class="site-icon" style="color: #1e88e5;"><i class="fas fa-gem"></i></div><div class="site-name">腾讯元宝</div></a>
+    <a href="https://kimi.moonshot.cn" target="_blank" class="site-item"><div class="site-icon" style="color: #ffa726;"><i class="fas fa-moon"></i></div><div class="site-name">kimi</div></a>
+    <a href="https://gemini.google.com" target="_blank" class="site-item"><div class="site-icon" style="color: #4285f4;"><i class="fab fa-google"></i></div><div class="site-name">Google Gemini</div></a>
+    
+    <!-- 视频和直播网站 -->
+    <a href="https://www.youtube.com" target="_blank" class="site-item"><div class="site-icon" style="color: #ff0000;"><i class="fab fa-youtube"></i></div><div class="site-name">YouTube</div></a>
+    <a href="https://www.jrkan2023.com" target="_blank" class="site-item"><div class="site-icon" style="color: #ff9800;"><i class="fas fa-tv"></i></div><div class="site-name">JRKAN直播</div></a>
+    <a href="https://www.zhibo8.com" target="_blank" class="site-item"><div class="site-icon" style="color: #2196f3;"><i class="fas fa-play-circle"></i></div><div class="site-name">直播吧</div></a>
+    
+    <!-- 其他实用网站 -->
+    <a href="https://www.bilibili.com" target="_blank" class="site-item"><div class="site-icon" style="color: #fb7299;"><i class="fab fa-bilibili"></i></div><div class="site-name">哔哩哔哩</div></a>
+    <a href="https://github.com" target="_blank" class="site-item"><div class="site-icon" style="color: #333;"><i class="fab fa-github"></i></div><div class="site-name">GitHub</div></a>
+    <a href="https://www.jd.com" target="_blank" class="site-item"><div class="site-icon" style="color: #e6162d;"><i class="fas fa-shopping-cart"></i></div><div class="site-name">京东</div></a>
+    
+    <!-- 新增网站 -->
+    <a href="https://www.leijing.xyz/index" target="_blank" class="site-item"><div class="site-icon" style="color: #4caf50;"><i class="fas fa-whale"></i></div><div class="site-name">雷鲸小站</div></a>
+    <a href="https://www.haimianxz.com" target="_blank" class="site-item"><div class="site-icon" style="color: #9c27b0;"><i class="fas fa-cube"></i></div><div class="site-name">海绵小站</div></a>
+    <a href="https://dash.cloudflare.com" target="_blank" class="site-item"><div class="site-icon" style="color: #f44336;"><i class="fas fa-cloud"></i></div><div class="site-name">cloudflare</div></a>
+    <a href="https://my.dnshe.com/clientarea.php" target="_blank" class="site-item"><div class="site-icon" style="color: #3f51b5;"><i class="fas fa-server"></i></div><div class="site-name">DNSHE</div></a>
+  </div>
+
+  <script>
+    // 高德地图API配置
+    const AMAP_KEY = 'fec8d520aa315f955cb85808c20bfb71';
+    
+    // 赣州市各区县adcode映射（用于精确到县区）
+    const GANZHOU_DISTRICTS = {
+      '章贡区': '360702',
+      '南康区': '360703',
+      '赣县区': '360704',
+      '信丰县': '360722',
+      '大余县': '360723',
+      '上犹县': '360724',
+      '崇义县': '360725',
+      '安远县': '360726',
+      '龙南市': '360727',
+      '定南县': '360728',
+      '全南县': '360729',
+      '宁都县': '360730',
+      '于都县': '360731',
+      '兴国县': '360732',
+      '会昌县': '360733',
+      '寻乌县': '360734',
+      '石城县': '360735',
+      '瑞金市': '360781'
+    };
+    
+    // 缓存数据
+    let cachedLocationData = null;
+    let cachedWeatherData = null;
+    let lastFetchTime = 0;
+    const CACHE_DURATION = 30 * 60 * 1000; // 30分钟缓存
+    
+    // 背景动图列表
+    const backgroundAnimations = [
+      // 当前使用的下雨动图
+      {
+        type: 'gif',
+        url: 'https://media.giphy.com/media/3o7aTskHEUdgCQAXde/giphy.gif',
+        name: '下雨',
+        overlayColor: 'linear-gradient(135deg, rgba(224, 247, 250, 0.9), rgba(178, 235, 242, 0.85))'
+      },
+      // 星空背景
+      {
+        type: 'gif',
+        url: 'https://media.giphy.com/media/l3vR85PnGsBwu1PFK/giphy.gif',
+        name: '星空',
+        overlayColor: 'linear-gradient(135deg, rgba(224, 247, 250, 0.85), rgba(178, 235, 242, 0.9))'
+      },
+      // 粒子背景
+      {
+        type: 'gif', 
+        url: 'https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif',
+        name: '粒子',
+        overlayColor: 'linear-gradient(135deg, rgba(240, 248, 255, 0.9), rgba(220, 240, 255, 0.85))'
+      }
+    ];
+    
+    let currentBgIndex = 0;
+    
+    // 搜索引擎配置
+    const searchEngines = {
+      bing: {
+        name: '必应',
+        url: 'https://www.bing.com/search?q=',
+        icon: 'fab fa-bing',
+        color: '#4285f4',
+        placeholder: '在必应中搜索内容...'
+      },
+      baidu: {
+        name: '百度',
+        url: 'https://www.baidu.com/s?wd=',
+        icon: 'fab fa-baidu',
+        color: '#2932e1',
+        placeholder: '在百度中搜索内容...'
+      },
+      google: {
+        name: 'Google',
+        url: 'https://www.google.com/search?q=',
+        icon: 'fab fa-google',
+        color: '#4285f4',
+        placeholder: '在Google中搜索内容...'
+      }
+    };
+    
+    let currentEngine = 'bing'; // 默认搜索引擎
+    
+    // 农历日期计算函数
+    function getLunarDate(date) {
+      // 简单的农历计算（简化版，仅用于演示）
+      // 在实际应用中，建议使用完整的农历库
+      const lunarMonths = [
+        '正月', '二月', '三月', '四月', '五月', '六月', 
+        '七月', '八月', '九月', '十月', '冬月', '腊月'
+      ];
+      
+      const lunarDays = [
+        '初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
+        '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
+        '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'
+      ];
+      
+      // 简单的干支计算（仅用于演示，实际需要完整算法）
+      const heavenlyStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+      const earthlyBranches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+      
+      // 演示数据：模拟获取农历日期
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      
+      // 简单的农历计算（演示用，实际应使用农历库）
+      // 这里为了演示，使用固定值：农历十一月廿九
+      const lunarMonth = '十一月';
+      const lunarDay = '廿九';
+      
+      // 简单的干支计算（演示用）
+      // 这里为了演示，使用固定值：乙未
+      const ganzhi = '乙未';
+      
+      return {
+        month: lunarMonth,
+        day: lunarDay,
+        ganzhi: ganzhi
+      };
+    }
+    
+    // 实时时间更新 - 按照图片格式显示
+    function updateTime() {
+      const now = new Date();
+      
+      // 时间部分: 16:52:50
+      const timeStr = now.toLocaleTimeString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      
+      // 日期部分: 01月17日 星期六
+      const monthStr = (now.getMonth() + 1).toString().padStart(2, '0');
+      const dayStr = now.getDate().toString().padStart(2, '0');
+      const weekArr = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      const weekStr = weekArr[now.getDay()];
+      
+      // 获取农历日期
+      const lunarDate = getLunarDate(now);
+      
+      // 组合成完整的日期字符串: 01月17日 星期六 十一月廿九 乙未
+      const dateStr = `${monthStr}月${dayStr}日 ${weekStr} ${lunarDate.month}${lunarDate.day} ${lunarDate.ganzhi}`;
+      
+      // 更新页面显示
+      document.getElementById('clock').textContent = timeStr;
+      document.getElementById('date').textContent = dateStr;
+    }
+    
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // 切换搜索引擎
+    function switchSearchEngine(engine) {
+      currentEngine = engine;
+      const engineConfig = searchEngines[engine];
+      
+      // 更新下拉菜单标签
+      const dropdownLabel = document.getElementById('dropdown-label');
+      dropdownLabel.innerHTML = `<i class="${engineConfig.icon}"></i>${engineConfig.name}`;
+      
+      // 更新输入框占位符
+      document.getElementById('search-input').placeholder = engineConfig.placeholder;
+      
+      // 更新下拉菜单中的选中项
+      const dropdownItems = document.querySelectorAll('.dropdown-item');
+      dropdownItems.forEach(item => {
+        if (item.dataset.engine === engine) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+    
+    // 搜索功能
+    function doSearch() {
+      const keyword = document.getElementById('search-input').value.trim();
+      if (keyword) {
+        const engineConfig = searchEngines[currentEngine];
+        window.open(`${engineConfig.url}${encodeURIComponent(keyword)}`, '_blank');
+        document.getElementById('search-input').value = '';
+      }
+    }
+    
+    // 搜索按钮点击事件
+    document.getElementById('search-btn').addEventListener('click', doSearch);
+    
+    // 搜索框回车事件
+    document.getElementById('search-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') doSearch();
+    });
+    
+    // 下拉菜单显示/隐藏
+    const dropdown = document.getElementById('search-dropdown');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    
+    dropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('show');
+    });
+    
+    // 下拉菜单项点击事件
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+      item.addEventListener('click', () => {
+        switchSearchEngine(item.dataset.engine);
+        dropdownMenu.classList.remove('show');
+      });
+    });
+    
+    // 点击页面其他区域关闭下拉菜单
+    document.addEventListener('click', () => {
+      dropdownMenu.classList.remove('show');
+    });
+    
+    // 阻止下拉菜单内部点击事件冒泡
+    dropdownMenu.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    // 获取位置和天气
+    async function getLocationAndWeather() {
+      const locationElement = document.querySelector('#location');
+      const weatherElement = document.querySelector('#weather');
+      const weatherIcon = document.querySelector('#weather i');
+      const locationLink = document.getElementById('location-link');
+      const weatherLink = document.getElementById('weather-link');
+      
+      // 显示加载状态
+      locationElement.textContent = '获取位置中...';
+      locationElement.className = 'loading';
+      weatherElement.textContent = '获取天气中...';
+      weatherElement.className = 'loading';
+      
+      // 检查缓存
+      const now = Date.now();
+      if (cachedLocationData && cachedWeatherData && (now - lastFetchTime) < CACHE_DURATION) {
+        displayCachedData();
+        return;
+      }
+      
+      try {
+        // 方法1: 使用ip-api.com（免费、无需key、可获取县区）
+        let locationData = null;
+        let exactLocationText = '';
+        let cityCode = '360700'; // 默认赣州市
+        
+        try {
+          const ipApiResponse = await fetch('https://ip-api.com/json/?lang=zh-CN&fields=status,message,country,regionName,city,district,lat,lon,query');
+          
+          if (ipApiResponse.ok) {
+            locationData = await ipApiResponse.json();
+            
+            if (locationData.status === 'success') {
+              // 优先使用district（县区），如果没有则使用city（市）
+              if (locationData.district && locationData.district !== '') {
+                exactLocationText = `${locationData.regionName}${locationData.city}${locationData.district}`;
+                // 尝试从赣州市区县映射中获取adcode
+                for (const [districtName, adcode] of Object.entries(GANZHOU_DISTRICTS)) {
+                  if (locationData.district.includes(districtName)) {
+                    cityCode = adcode;
+                    break;
+                  }
+                }
+              } else if (locationData.city) {
+                exactLocationText = `${locationData.regionName}${locationData.city}`;
+                // 如果是赣州市，默认使用章贡区
+                if (locationData.city.includes('赣州')) {
+                  cityCode = '360702'; // 章贡区
+                }
+              } else {
+                exactLocationText = `${locationData.regionName}`;
+              }
+            }
+          }
+        } catch (ipApiError) {
+          console.warn('ip-api.com定位失败:', ipApiError);
+        }
+        
+        // 方法2: 如果ip-api失败，使用高德IP定位
+        if (!exactLocationText) {
+          try {
+            const amapUrl = `https://restapi.amap.com/v3/ip?key=${AMAP_KEY}`;
+            const amapResponse = await fetch(amapUrl);
+            
+            if (amapResponse.ok) {
+              const amapData = await amapResponse.json();
+              
+              if (amapData.status === '1') {
+                if (amapData.province && amapData.city) {
+                  if (amapData.province === amapData.city) {
+                    exactLocationText = `${amapData.province}`;
+                  } else {
+                    const province = amapData.province.replace(/[省|市|自治区|特别行政区]$/, '');
+                    const city = amapData.city.replace(/[市|地区|盟|州]$/, '');
+                    exactLocationText = `${province}${city}`;
+                  }
+                  cityCode = amapData.adcode || '360700';
+                }
+              }
+            }
+          } catch (amapError) {
+            console.warn('高德定位失败:', amapError);
+          }
+        }
+        
+        // 方法3: 如果以上都失败，使用默认位置（江西赣州章贡区）
+        if (!exactLocationText) {
+          exactLocationText = '江西赣州章贡区';
+          cityCode = '360702';
+        }
+        
+        // 设置位置链接（跳转到百度地图）
+        const baiduMapUrl = `https://map.baidu.com/search/${encodeURIComponent(exactLocationText)}`;
+        locationLink.href = baiduMapUrl;
+        
+        locationElement.textContent = exactLocationText;
+        locationElement.classList.remove('loading');
+        
+        // 获取天气信息
+        try {
+          // 使用高德天气API
+          const weatherUrl = `https://restapi.amap.com/v3/weather/weatherInfo?key=${AMAP_KEY}&city=${cityCode}&extensions=base`;
+          const weatherResponse = await fetch(weatherUrl);
+          
+          if (weatherResponse.ok) {
+            const weatherData = await weatherResponse.json();
+            
+            if (weatherData.status === '1' && weatherData.lives && weatherData.lives.length > 0) {
+              const weatherInfo = weatherData.lives[0];
+              const temp = weatherInfo.temperature;
+              const weatherDesc = weatherInfo.weather;
+              
+              // 显示天气信息
+              weatherElement.textContent = `${weatherDesc} ${temp}℃`;
+              
+              // 设置天气链接（使用腾讯天气）
+              const weatherDetailUrl = `https://tianqi.qq.com/?city=${encodeURIComponent(exactLocationText.replace(/[省市区县]/g, ''))}`;
+              weatherLink.href = weatherDetailUrl;
+              
+              // 更新天气图标
+              updateWeatherIconByAmap(weatherIcon, weatherDesc);
+              
+              // 缓存数据
+              cachedLocationData = {
+                locationText: exactLocationText,
+                cityCode,
+                mapUrl: baiduMapUrl,
+                weatherUrl: weatherDetailUrl
+              };
+              cachedWeatherData = {
+                temp,
+                weatherDesc
+              };
+              lastFetchTime = now;
+            } else {
+              throw new Error('天气数据解析失败');
+            }
+          } else {
+            throw new Error('天气API请求失败');
+          }
+        } catch (weatherError) {
+          console.warn('天气获取失败:', weatherError);
+          showFallbackWeather(cityCode, exactLocationText);
+        }
+        
+        weatherElement.classList.remove('loading');
+        
+      } catch (error) {
+        console.error('获取位置信息失败:', error);
+        showErrorInfo();
+      }
+    }
+    
+    // 显示缓存的数据
+    function displayCachedData() {
+      const locationElement = document.querySelector('#location');
+      const weatherElement = document.querySelector('#weather');
+      const weatherIcon = document.querySelector('#weather i');
+      const locationLink = document.getElementById('location-link');
+      const weatherLink = document.getElementById('weather-link');
+      
+      locationElement.textContent = cachedLocationData.locationText;
+      locationElement.classList.remove('loading');
+      locationLink.href = cachedLocationData.mapUrl;
+      
+      weatherElement.textContent = `${cachedWeatherData.weatherDesc} ${cachedWeatherData.temp}℃`;
+      updateWeatherIconByAmap(weatherIcon, cachedWeatherData.weatherDesc);
+      weatherElement.classList.remove('loading');
+      weatherLink.href = cachedLocationData.weatherUrl;
+    }
+    
+    // 显示备用天气信息
+    function showFallbackWeather(cityCode, locationText) {
+      const weatherElement = document.querySelector('#weather');
+      const weatherIcon = document.querySelector('#weather i');
+      const weatherLink = document.getElementById('weather-link');
+      
+      // 根据季节显示大致天气
+      const month = new Date().getMonth() + 1;
+      let season = '';
+      let tempRange = '';
+      
+      if (month >= 3 && month <= 5) {
+        season = '春季';
+        tempRange = '15-25°C';
+      } else if (month >= 6 && month <= 8) {
+        season = '夏季';
+        tempRange = '25-35°C';
+      } else if (month >= 9 && month <= 11) {
+        season = '秋季';
+        tempRange = '15-28°C';
+      } else {
+        season = '冬季';
+        tempRange = '5-15°C';
+      }
+      
+      weatherElement.textContent = `${season} ${tempRange}`;
+      weatherIcon.className = 'fas fa-cloud-sun weather-icon';
+      weatherIcon.style.color = '#ff9800';
+      weatherElement.classList.remove('loading');
+      
+      // 设置备用天气链接（使用腾讯天气）
+      weatherLink.href = `https://tianqi.qq.com/?city=${encodeURIComponent('赣州')}`;
+    }
+    
+    // 显示错误信息
+    function showErrorInfo() {
+      const locationElement = document.querySelector('#location');
+      const weatherElement = document.querySelector('#weather');
+      const locationLink = document.getElementById('location-link');
+      const weatherLink = document.getElementById('weather-link');
+      
+      locationElement.textContent = '江西赣州章贡区';
+      locationElement.classList.remove('loading');
+      locationElement.classList.remove('error');
+      locationLink.href = 'https://map.baidu.com/search/江西赣州章贡区';
+      
+      weatherElement.textContent = '多云 22℃';
+      weatherElement.classList.remove('loading');
+      weatherElement.classList.remove('error');
+      weatherLink.href = 'https://tianqi.qq.com/?city=赣州';
+      
+      // 设置默认图标
+      const weatherIcon = document.querySelector('#weather i');
+      weatherIcon.className = 'fas fa-cloud-sun weather-icon';
+      weatherIcon.style.color = '#ff9800';
+    }
+    
+    // 根据高德天气描述更新图标
+    function updateWeatherIconByAmap(iconElement, weatherDesc) {
+      const desc = weatherDesc || '';
+      
+      // 清除之前的颜色设置
+      iconElement.style.color = '';
+      
+      // 高德天气状态映射
+      if (desc.includes('晴')) {
+        if (desc.includes('多云') || desc.includes('间')) {
+          iconElement.className = 'fas fa-cloud-sun weather-icon';
+          iconElement.style.color = '#ff9800';
+        } else {
+          iconElement.className = 'fas fa-sun weather-icon';
+          iconElement.style.color = '#ff9800';
+        }
+      } else if (desc.includes('多云')) {
+        iconElement.className = 'fas fa-cloud weather-icon';
+        iconElement.style.color = '#78909c';
+      } else if (desc.includes('阴')) {
+        iconElement.className = 'fas fa-cloud weather-icon';
+        iconElement.style.color = '#607d8b';
+      } else if (desc.includes('雨')) {
+        if (desc.includes('雷')) {
+          iconElement.className = 'fas fa-bolt weather-icon';
+          iconElement.style.color = '#ff9800';
+        } else if (desc.includes('小雨') || desc.includes('阵雨')) {
+          iconElement.className = 'fas fa-cloud-rain weather-icon';
+          iconElement.style.color = '#4285f4';
+        } else if (desc.includes('中雨')) {
+          iconElement.className = 'fas fa-cloud-rain weather-icon';
+          iconElement.style.color = '#1a73e8';
+        } else if (desc.includes('大雨') || desc.includes('暴雨')) {
+          iconElement.className = 'fas fa-cloud-showers-heavy weather-icon';
+          iconElement.style.color = '#0d47a1';
+        } else {
+          iconElement.className = 'fas fa-cloud-rain weather-icon';
+          iconElement.style.color = '#4285f4';
+        }
+      } else if (desc.includes('雪')) {
+        iconElement.className = 'fas fa-snowflake weather-icon';
+        iconElement.style.color = '#b2ebf2';
+      } else if (desc.includes('雾') || desc.includes('霾')) {
+        iconElement.className = 'fas fa-smog weather-icon';
+        iconElement.style.color = '#9e9e9e';
+      } else if (desc.includes('沙') || desc.includes('尘')) {
+        iconElement.className = 'fas fa-wind weather-icon';
+        iconElement.style.color = '#8d6e63';
+      } else {
+        // 默认图标
+        iconElement.className = 'fas fa-cloud-sun weather-icon';
+        iconElement.style.color = '#ff9800';
+      }
+    }
+    
+    // 刷新按钮功能
+    document.getElementById('refresh-btn').addEventListener('click', () => {
+      // 清除缓存
+      cachedLocationData = null;
+      cachedWeatherData = null;
+      lastFetchTime = 0;
+      
+      // 显示刷新状态
+      const refreshBtn = document.getElementById('refresh-btn');
+      refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      
+      // 重新获取
+      getLocationAndWeather().finally(() => {
+        // 恢复按钮状态
+        setTimeout(() => {
+          refreshBtn.innerHTML = '<i class="fas fa-redo-alt"></i>';
+        }, 500);
+      });
+    });
+    
+    // 背景切换功能
+    function setupBackgroundToggle() {
+      const bgToggle = document.getElementById('bg-toggle');
+      const bgAnimation = document.getElementById('bg-animation');
+      const bgOverlay = document.getElementById('bg-overlay');
+      
+      bgToggle.addEventListener('click', () => {
+        // 循环切换背景
+        currentBgIndex = (currentBgIndex + 1) % backgroundAnimations.length;
+        const bg = backgroundAnimations[currentBgIndex];
+        
+        // 更新背景
+        bgAnimation.style.backgroundImage = `url('${bg.url}')`;
+        bgOverlay.style.background = bg.overlayColor;
+        
+        // 显示通知
+        showNotification(`已切换到 ${bg.name} 背景`);
+      });
+    }
+    
+    // 显示通知
+    function showNotification(message) {
+      // 移除已有的通知
+      const existingNotification = document.querySelector('.bg-notification');
+      if (existingNotification) {
+        existingNotification.remove();
+      }
+      
+      // 创建新通知
+      const notification = document.createElement('div');
+      notification.className = 'bg-notification';
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #263238;
+        padding: 10px 20px;
+        border-radius: 20px;
+        z-index: 1000;
+        font-size: 14px;
+        animation: fadeInOut 3s ease;
+        border: 1px solid rgba(66, 133, 244, 0.3);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      `;
+      
+      // 添加动画样式
+      if (!document.querySelector('#notification-animation')) {
+        const style = document.createElement('style');
+        style.id = 'notification-animation';
+        style.textContent = `
+          @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      document.body.appendChild(notification);
+      
+      // 3秒后移除通知
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 3000);
+    }
+    
+    // 页面加载完成后获取位置和天气
+    document.addEventListener('DOMContentLoaded', () => {
+      getLocationAndWeather();
+      setupBackgroundToggle();
+    });
+    
+    // 每30分钟更新一次天气（避免频繁调用API）
+    setInterval(getLocationAndWeather, 30 * 60 * 1000);
+  </script>
+</body>
+</html>
