@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>小鹏子的桌面导航</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js"></script>
+  
   <style>
     /* 隐藏Hexo主题元素 */
     #header, #navbar, #sidebar, #footer, .page-header, .site-nav, .sidebar-widget, .blog-info {
@@ -14,1097 +19,586 @@
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
-    /* 背景动图设置 */
     body {
-      font-family: "Microsoft Yahei", "PingFang SC", sans-serif;
+      font-family: "Noto Sans SC", "Microsoft Yahei", sans-serif;
       min-height: 100vh;
       padding: 30px 20px;
       position: relative;
       overflow-x: hidden;
-    }
-    
-    /* 背景动图层 - 下雨动图 */
-    .bg-animation {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-      overflow: hidden;
-    }
-    
-    /* 下雨动图背景 */
-    .bg-animation::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('https://media.giphy.com/media/3o7aTskHEUdgCQAXde/giphy.gif'); /* 下雨动图 */
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      opacity: 0.7; /* 调整透明度 */
-      filter: blur(1px); /* 轻微模糊，减少对文字阅读的影响 */
-    }
-    
-    /* 渐变遮罩层，增强文字可读性 */
-    .bg-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(224, 247, 250, 0.9), rgba(178, 235, 242, 0.85));
-      z-index: -1;
-    }
-    
-    /* 内容区域，确保在背景之上 */
-    .top-area, .search-box-container, .site-grid {
-      position: relative;
-      z-index: 1;
-    }
-
-    /* 欢迎文字样式 - 修改为小火箭 */
-    .welcome-text {
-      font-size: 22px;
-      font-weight: 600;
-      color: #1565c0;
-      margin-bottom: 10px;
-      text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
-      letter-spacing: 1px;
-    }
-    
-    .welcome-text::after {
-      content: ' 🚀'; /* 改为小火箭 */
-    }
-
-    .top-area {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .clock {
-      font-size: 38px;
-      font-weight: 700;
-      color: #263238;
-      margin-bottom: 8px;
-      text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
-    }
-    .date {
-      font-size: 16px;
-      color: #263238;
-      margin-bottom: 10px;
-      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
-    }
-    .location-weather {
-      font-size: 15px;
-      color: #263238;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 25px;
-      min-height: 24px;
-    }
-    .location-weather a {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.7);
-      padding: 5px 12px;
-      border-radius: 20px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(66, 133, 244, 0.3);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    .location-weather a:hover {
-      color: #4285f4;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      background: rgba(255, 255, 255, 0.9);
-    }
-    .location-icon { color: #4285f4; }
-    .weather-icon { color: #ff9800; }
-    .loading {
-      color: #78909c;
-      font-style: italic;
-    }
-    .error {
-      color: #f44336;
-      font-size: 14px;
-    }
-    .refresh-btn {
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(66, 133, 244, 0.3);
-      color: #263238;
-      cursor: pointer;
-      font-size: 14px;
-      margin-left: 5px;
-      padding: 5px 10px;
-      border-radius: 50%;
-      transition: all 0.2s ease;
-      backdrop-filter: blur(5px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    .refresh-btn:hover {
-      color: #4285f4;
-      background: rgba(255, 255, 255, 0.9);
-      transform: rotate(90deg);
-    }
-
-    /* 搜索框样式 - 模仿图片中的设计 */
-    .search-box-container {
-      max-width: 680px;
-      margin: 0 auto 35px auto;
-    }
-    
-    /* 搜索引擎选择器 - 隐藏 */
-    .search-engine-selector {
-      display: none !important; /* 隐藏百度/必应/Google按钮栏 */
-    }
-    
-    .search-box {
-      display: flex;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(66, 133, 244, 0.3);
-    }
-    
-    .search-input-wrapper {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      padding: 0 15px;
-    }
-    
-    .search-engine-icon {
-      color: #4285f4;
-      margin-right: 10px;
-      font-size: 16px;
-    }
-    
-    .search-input {
-      flex: 1;
-      padding: 15px 0;
-      border: none;
-      outline: none;
-      font-size: 15px;
-      color: #263238;
-      background: transparent;
-      width: 100%;
-    }
-    
-    .search-input::placeholder { 
-      color: #666; 
-    }
-    
-    .search-dropdown {
-      position: relative;
-      display: flex;
-      align-items: center;
-      padding: 0 15px;
-      background: rgba(255, 255, 255, 0.9);
-      border-left: 1px solid rgba(66, 133, 244, 0.2);
-      cursor: pointer;
-      min-width: 120px;
-    }
-    
-    .dropdown-label {
-      color: #263238;
-      font-size: 14px;
-      margin-right: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    .dropdown-arrow {
-      color: #4285f4;
-      font-size: 12px;
-      transition: transform 0.3s ease;
-    }
-    
-    .search-dropdown:hover .dropdown-arrow {
-      transform: rotate(180deg);
-    }
-    
-    .dropdown-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 8px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-      min-width: 150px;
-      z-index: 1000;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(66, 133, 244, 0.3);
-      display: none;
-    }
-    
-    .dropdown-menu.show {
-      display: block;
-    }
-    
-    .dropdown-item {
-      padding: 12px 16px;
-      color: #263238;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.2s ease;
-    }
-    
-    .dropdown-item:hover {
-      background: rgba(66, 133, 244, 0.1);
-      color: #4285f4;
-    }
-    
-    .dropdown-item.active {
-      background: rgba(66, 133, 244, 0.2);
-      color: #4285f4;
-    }
-    
-    .search-btn {
-      padding: 0 25px;
-      background: #4285f4;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      font-size: 17px;
-      transition: all 0.2s ease;
-    }
-    
-    .search-btn:hover { 
-      background: #3367d6; 
-    }
-
-    .site-grid {
-      max-width: 1050px;
-      width: 100%;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
-      gap: 30px 25px;
-      justify-items: center;
-      padding: 0 20px;
-    }
-    .site-item {
+      background-color: #e0f7fa;
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-decoration: none;
-      color: #263238;
-      text-align: center;
-      width: 85px;
-    }
-    .site-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.9);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 25px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      margin-bottom: 12px;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-    }
-    .site-item:hover .site-icon {
-      transform: scale(1.15) translateY(-5px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-      border-color: rgba(66, 133, 244, 0.4);
-    }
-    .site-name {
-      font-size: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 100%;
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 3px 8px;
-      border-radius: 10px;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(66, 133, 244, 0.2);
-    }
-
-    /* 响应式设计 */
-    @media (max-width: 480px) {
-      .welcome-text { font-size: 18px; }
-      .clock { font-size: 30px; }
-      .location-weather { flex-direction: column; gap: 8px; font-size:14px; }
-      .search-engine-selector { gap: 8px; }
-      .search-engine-btn { padding: 6px 12px; font-size: 12px; }
-      .site-grid { gap: 22px 20px; }
-      .site-icon { width: 48px; height: 48px; font-size:23px; }
-      .search-dropdown { min-width: 100px; padding: 0 10px; }
-      .dropdown-label { font-size: 13px; }
+      color: #333;
     }
     
-    /* 背景切换按钮 */
-    .bg-toggle {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    /* 背景动图层 */
+    .bg-animation {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden;
+    }
+    .bg-animation::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background-image: url('https://media.giphy.com/media/3o7aTskHEUdgCQAXde/giphy.gif');
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+      opacity: 0.7; filter: blur(1px);
+      transition: all 0.5s ease;
+    }
+    .bg-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, rgba(224, 247, 250, 0.85), rgba(178, 235, 242, 0.8));
+      z-index: -1;
+      transition: all 0.5s ease;
+    }
+    
+    .main-container {
+      width: 100%; max-width: 1050px; display: flex; flex-direction: column; align-items: center;
+      position: relative; z-index: 1; padding-top: 2vh;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 文字与时间 */
+    .top-area { 
+      text-align: center; margin-bottom: 35px; width: 100%; 
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+    
+    .welcome-text {
+      font-size: 26px; font-weight: 700; color: #1565c0; margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8); letter-spacing: 1px;
+    }
+    
+    .clock {
+      font-size: 52px; font-weight: 700; color: #263238; margin-bottom: 5px;
+      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+      font-feature-settings: "tnum"; font-variant-numeric: tabular-nums;
+      letter-spacing: -1px;
+    }
+    
+    .date {
+      font-size: 16px; color: #546e7a; margin-bottom: 8px;
+      font-weight: 500; letter-spacing: 1px;
+      background: rgba(255,255,255,0.4); padding: 4px 14px; border-radius: 20px;
+      display: inline-block;
+    }
+
+    .lunar-date {
+      font-size: 14px; color: #546e7a; margin-bottom: 15px;
+      font-weight: 500; letter-spacing: 1px;
+      background: rgba(255,255,255,0.3); padding: 3px 12px; border-radius: 20px;
+      display: inline-block; opacity: 0.9;
+    }
+
+    /* --- 1. 每日一言样式 --- */
+    .hitokoto-container {
+      margin-bottom: 25px;
       cursor: pointer;
-      z-index: 100;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      transition: all 0.3s ease;
-      color: #4285f4;
+      max-width: 80%;
+      margin-left: auto; margin-right: auto;
+      transition: opacity 0.3s;
     }
-    .bg-toggle:hover {
-      background: #fff;
-      transform: scale(1.1);
-      color: #3367d6;
+    .hitokoto-container:hover { opacity: 0.8; }
+    .hitokoto-text {
+      font-size: 16px; color: #455a64; font-style: italic; font-weight: 500;
+      text-shadow: 0 1px 1px rgba(255,255,255,0.8);
+      position: relative; display: inline-block;
     }
+    .hitokoto-text::before, .hitokoto-text::after {
+      content: '"'; font-size: 20px; color: #1565c0; margin: 0 5px; opacity: 0.6;
+    }
+
+    /* 位置天气 */
+    .location-weather { display: flex; align-items: center; justify-content: center; gap: 15px; }
+    .info-capsule {
+      display: flex; align-items: center; gap: 8px; text-decoration: none; color: #37474f;
+      background: rgba(255, 255, 255, 0.7); padding: 8px 18px; border-radius: 24px;
+      backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 4px 12px rgba(66, 133, 244, 0.08); font-size: 14px; font-weight: 500;
+      transition: all 0.3s ease; cursor: default;
+    }
+    .info-capsule:hover { background: rgba(255, 255, 255, 0.95); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(66, 133, 244, 0.2); }
+    .location-icon { color: #4285f4; }
+    .weather-icon { color: #ff9800; }
+    .refresh-btn {
+      background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.8);
+      color: #546e7a; cursor: pointer; width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.08);
+    }
+    .refresh-btn:hover { background: #fff; color: #4285f4; transform: rotate(180deg) scale(1.1); }
+
+    /* 搜索框容器 */
+    .search-box-container {
+      position: relative; z-index: 100; width: 100%; max-width: 680px;
+      margin: 0 auto 50px auto; 
+      transition: margin-bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: fadeInUp 0.8s ease-out 0.2s forwards; opacity: 0;
+    }
+    .search-box-container.push-content { margin-bottom: 180px; }
+
+    .search-box {
+      display: flex; height: 56px; border-radius: 18px;
+      box-shadow: 0 15px 35px rgba(66, 133, 244, 0.12);
+      background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.8); position: relative; align-items: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .search-box:hover { box-shadow: 0 20px 45px rgba(66, 133, 244, 0.18); transform: translateY(-1px); }
+
+    .search-engine-selector {
+      height: 100%; display: flex; align-items: center; padding: 0 14px 0 20px;
+      cursor: pointer; border-right: 1px solid rgba(0,0,0,0.06); position: relative;
+      border-top-left-radius: 18px; border-bottom-left-radius: 18px; transition: background 0.2s;
+    }
+    .search-engine-selector:hover { background: rgba(0,0,0,0.03); }
+    .current-engine-icon { width: 24px; height: 24px; margin-right: 8px; border-radius: 4px; object-fit: contain; }
+    .selector-arrow { font-size: 10px; color: #90a4ae; transition: transform 0.3s; }
+    .search-engine-selector.active .selector-arrow { transform: rotate(180deg); }
+
+    .search-input {
+      flex: 1; height: 100%; border: none; outline: none; font-size: 16px; color: #333;
+      background: transparent; padding: 0 20px; font-family: inherit;
+    }
+    .search-input::placeholder { color: #90a4ae; font-size: 15px; }
+
+    .search-btn {
+      width: 64px; height: 100%; border: none; background: #4285f4; color: white;
+      border-top-right-radius: 18px; border-bottom-right-radius: 18px; cursor: pointer;
+      font-size: 18px; transition: all 0.2s;
+    }
+    .search-btn:hover { background: #3367d6; width: 70px; }
+
+    .engine-dropdown {
+      position: absolute; top: 125%; left: 0; width: 140px;
+      background: rgba(255, 255, 255, 0.95); border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); padding: 8px;
+      display: none; flex-direction: column; border: 1px solid rgba(255,255,255,0.9); z-index: 200;
+      backdrop-filter: blur(15px);
+    }
+    .engine-dropdown.show { display: flex; animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .engine-option { display: flex; align-items: center; gap: 12px; padding: 10px 12px; font-size: 14px; color: #546e7a; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+    .engine-option:hover { background: #eef5ff; color: #1565c0; transform: translateX(3px); }
+    .engine-option.selected { background: #e3f2fd; color: #1565c0; font-weight: 600; }
+    .engine-icon { width: 20px; height: 20px; border-radius: 3px; object-fit: contain; }
+
+    /* 网格样式 */
+    .site-grid {
+      width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 40px 20px; justify-items: center; padding: 0 20px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: fadeInUp 0.8s ease-out 0.4s forwards; opacity: 0;
+    }
+    .site-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #263238; width: 90px; }
+    .site-icon {
+      width: 64px; height: 64px; border-radius: 20px;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex; justify-content: center; align-items: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06); margin-bottom: 14px;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden;
+      backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.6);
+    }
+    .site-icon img { width: 36px; height: 36px; object-fit: contain; border-radius: 6px; }
+    .site-item:hover .site-icon { transform: translateY(-8px) scale(1.05); box-shadow: 0 15px 30px rgba(66, 133, 244, 0.25); background: #fff; border-color: #fff; }
+    .site-name {
+      font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      width: 100%; text-align: center; background: rgba(255, 255, 255, 0.5);
+      padding: 4px 10px; border-radius: 12px; font-weight: 500; color: #455a64; transition: all 0.3s;
+    }
+    .site-item:hover .site-name { background: rgba(255, 255, 255, 0.95); color: #1565c0; }
+
+    /* --- 右侧悬浮功能区 (To-Do + 热搜) --- */
+    .side-tools {
+      position: fixed; top: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 500;
+    }
+    .tool-btn {
+      width: 44px; height: 44px; border-radius: 50%; border: none;
+      background: rgba(255,255,255,0.7); backdrop-filter: blur(5px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer;
+      color: #546e7a; font-size: 18px; transition: all 0.3s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tool-btn:hover { background: #fff; color: #1565c0; transform: scale(1.1); }
+    
+    /* 侧边栏抽屉 */
+    .sidebar-drawer {
+      position: fixed; top: 0; right: -350px; width: 320px; height: 100%;
+      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+      box-shadow: -5px 0 30px rgba(0,0,0,0.1); z-index: 1000;
+      transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 20px; display: flex; flex-direction: column;
+    }
+    .sidebar-drawer.open { right: 0; }
+    .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .drawer-title { font-size: 18px; font-weight: 700; color: #333; }
+    .close-drawer { cursor: pointer; color: #999; font-size: 20px; transition: color 0.2s; }
+    .close-drawer:hover { color: #333; }
+
+    /* 待办清单样式 */
+    .todo-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+    .todo-input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+    .todo-add-btn { background: #4285f4; color: #fff; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; }
+    .todo-list { list-style: none; overflow-y: auto; flex: 1; }
+    .todo-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px dashed #eee; animation: fadeIn 0.3s; }
+    .todo-checkbox { margin-right: 10px; cursor: pointer; }
+    .todo-text { flex: 1; font-size: 14px; color: #333; word-break: break-all; }
+    .todo-item.done .todo-text { text-decoration: line-through; color: #aaa; }
+    .todo-delete { color: #ff5252; cursor: pointer; font-size: 12px; opacity: 0; transition: opacity 0.2s; padding: 5px; }
+    .todo-item:hover .todo-delete { opacity: 1; }
+
+    /* 热搜列表样式 */
+    .hot-list { list-style: none; overflow-y: auto; flex: 1; padding-right: 5px; }
+    .hot-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; transition: background 0.2s; }
+    .hot-rank { width: 24px; font-weight: 700; font-size: 16px; color: #ff9800; font-style: italic; }
+    .hot-rank.top-3 { color: #ff5252; }
+    .hot-link { flex: 1; text-decoration: none; color: #455a64; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hot-link:hover { color: #1565c0; }
+    .hot-score { font-size: 12px; color: #90a4ae; margin-left: 10px; }
+
+    @media (max-width: 480px) {
+      .welcome-text { font-size: 20px; }
+      .clock { font-size: 40px; }
+      .search-box-container { margin-bottom: 30px; }
+      .site-grid { gap: 25px 15px; grid-template-columns: repeat(4, 1fr); }
+      .site-icon { width: 52px; height: 52px; }
+      .site-icon img { width: 28px; height: 28px; }
+      .search-box-container.push-content { margin-bottom: 160px; }
+      .side-tools { top: auto; bottom: 80px; right: 20px; } /* 手机端把工具放下面，避免挡住 */
+      .sidebar-drawer { width: 85%; right: -100%; }
+    }
+    
+    .bg-toggle {
+      position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.8);
+      border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; z-index: 100;
+      color: #555; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s;
+      backdrop-filter: blur(5px);
+    }
+    .bg-toggle:hover { transform: scale(1.1) rotate(90deg); background: #fff; color: #4285f4; }
   </style>
 </head>
 <body>
-  <!-- 背景动图层 -->
   <div class="bg-animation" id="bg-animation"></div>
-  
-  <!-- 渐变遮罩层 -->
   <div class="bg-overlay" id="bg-overlay"></div>
   
-  <!-- 背景切换按钮 -->
-  <button class="bg-toggle" id="bg-toggle" title="切换背景">
-    <i class="fas fa-image"></i>
-  </button>
+  <div class="side-tools">
+    <button class="tool-btn" id="btn-todo" title="待办清单"><i class="fas fa-tasks"></i></button>
+    <button class="tool-btn" id="btn-hot" title="全网热搜"><i class="fab fa-hotjar"></i></button>
+  </div>
+  <button class="bg-toggle" id="bg-toggle" title="切换背景"><i class="fas fa-image"></i></button>
 
-  <div class="top-area">
-    <!-- 欢迎文字 -->
-    <div class="welcome-text" id="welcome-text">欢迎来到小鹏子的网站</div>
-    
-    <div class="clock" id="clock">16:52:50</div>
-    <div class="date" id="date">01月17日 星期六 十一月廿九 乙未</div>
-    <!-- 自动获取位置和天气 -->
-    <div class="location-weather" id="location-weather">
-      <a id="location-link" target="_blank">
-        <i class="fas fa-map-marker-alt location-icon"></i>
-        <span id="location" class="loading">获取位置中...</span>
-      </a>
-      <a id="weather-link" target="_blank">
-        <i class="fas fa-cloud weather-icon"></i>
-        <span id="weather" class="loading">获取天气中...</span>
-      </a>
-      <button class="refresh-btn" id="refresh-btn" title="刷新天气">
-        <i class="fas fa-redo-alt"></i>
-      </button>
+  <div class="sidebar-drawer" id="drawer-todo">
+    <div class="drawer-header">
+      <div class="drawer-title">📝 待办清单</div>
+      <i class="fas fa-times close-drawer" onclick="toggleDrawer('drawer-todo')"></i>
     </div>
+    <div class="todo-input-group">
+      <input type="text" class="todo-input" id="todo-input" placeholder="输入任务，回车添加...">
+      <button class="todo-add-btn" id="todo-add"><i class="fas fa-plus"></i></button>
+    </div>
+    <ul class="todo-list" id="todo-list">
+      </ul>
   </div>
 
-  <!-- 搜索框区域 -->
-  <div class="search-box-container">
-    <!-- 搜索引擎选择器 - 已隐藏 -->
-    <div class="search-engine-selector" style="display: none;">
-      <button class="search-engine-btn" data-engine="baidu">
-        <i class="fab fa-baidu"></i>
-        百度
-      </button>
-      <button class="search-engine-btn active" data-engine="bing">
-        <i class="fab fa-bing"></i>
-        必应
-      </button>
-      <button class="search-engine-btn" data-engine="google">
-        <i class="fab fa-google"></i>
-        Google
-      </button>
+  <div class="sidebar-drawer" id="drawer-hot">
+    <div class="drawer-header">
+      <div class="drawer-title">🔥 微博热搜</div>
+      <i class="fas fa-times close-drawer" onclick="toggleDrawer('drawer-hot')"></i>
     </div>
-    
-    <!-- 搜索框 -->
-    <div class="search-box">
-      <div class="search-input-wrapper">
-        <i class="fas fa-search search-engine-icon" id="search-icon"></i>
-        <input type="text" class="search-input" id="search-input" placeholder="在必应中搜索内容...">
-      </div>
+    <ul class="hot-list" id="hot-list">
+      <li style="text-align:center; color:#999; margin-top:20px;">正在获取热搜...</li>
+    </ul>
+  </div>
+
+  <div class="main-container">
+    <div class="top-area">
+      <div class="welcome-text" id="greeting">欢迎来到小鹏子的网站</div>
+      <div class="clock" id="clock">00:00:00</div>
+      <div class="date" id="date">加载中...</div>
+      <div><div class="lunar-date" id="lunar">农历加载中...</div></div>
       
-      <div class="search-dropdown" id="search-dropdown">
-        <span class="dropdown-label" id="dropdown-label">
-          <i class="fab fa-bing"></i>
-          必应
-        </span>
-        <i class="fas fa-chevron-down dropdown-arrow"></i>
-        <div class="dropdown-menu" id="dropdown-menu">
-          <div class="dropdown-item active" data-engine="bing">
-            <i class="fab fa-bing"></i>
-            必应搜索
-          </div>
-          <div class="dropdown-item" data-engine="baidu">
-            <i class="fab fa-baidu"></i>
-            百度搜索
-          </div>
-          <div class="dropdown-item" data-engine="google">
-            <i class="fab fa-google"></i>
-            Google搜索
+      <div class="hitokoto-container" id="hitokoto-box" title="点击切换">
+        <div class="hitokoto-text" id="hitokoto-text">正在加载一言...</div>
+      </div>
+
+      <div class="location-weather">
+        <a class="info-capsule" id="location-box" target="_blank">
+          <i class="fas fa-map-marker-alt location-icon"></i>
+          <span id="location-text">定位中...</span>
+        </a>
+        <a class="info-capsule" id="weather-box" target="_blank">
+          <i class="fas fa-cloud weather-icon"></i>
+          <span id="weather-text">--°C</span>
+        </a>
+        <button class="refresh-btn" id="refresh-btn" title="更新天气">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="search-box-container" id="search-container">
+      <div class="search-box">
+        <div class="search-engine-selector" id="engine-selector">
+          <img src="https://www.google.com/s2/favicons?domain=www.bing.com&sz=64" class="current-engine-icon" id="current-icon" alt="engine">
+          <i class="fas fa-chevron-down selector-arrow"></i>
+          <div class="engine-dropdown" id="engine-dropdown">
+            <div class="engine-option selected" data-engine="bing">
+              <img src="https://www.google.com/s2/favicons?domain=www.bing.com&sz=64" class="engine-icon" alt="bing"> 必应
+            </div>
+            <div class="engine-option" data-engine="google">
+              <img src="https://www.google.com/s2/favicons?domain=www.google.com&sz=64" class="engine-icon" alt="google"> Google
+            </div>
+            <div class="engine-option" data-engine="baidu">
+              <img src="https://www.google.com/s2/favicons?domain=www.baidu.com&sz=64" class="engine-icon" alt="baidu"> 百度
+            </div>
           </div>
         </div>
+        <input type="text" class="search-input" id="search-input" placeholder="在必应中搜索内容..." autocomplete="off">
+        <button class="search-btn" id="search-btn"><i class="fas fa-search"></i></button>
       </div>
-      
-      <button class="search-btn" id="search-btn">
-        <i class="fas fa-search"></i>
-      </button>
     </div>
-  </div>
 
-  <div class="site-grid">
-    <!-- 搜索类网站 -->
-    <a href="https://www.bing.com" target="_blank" class="site-item"><div class="site-icon" style="color: #4285f4;"><i class="fab fa-bing"></i></div><div class="site-name">必应搜索</div></a>
-    
-    <!-- AI助手网站 -->
-    <a href="https://www.doubao.com" target="_blank" class="site-item"><div class="site-icon" style="color: #ff6b6b;"><i class="fas fa-robot"></i></div><div class="site-name">豆包</div></a>
-    <a href="https://www.deepseek.com" target="_blank" class="site-item"><div class="site-icon" style="color: #4ecdc4;"><i class="fas fa-brain"></i></div><div class="site-name">deepseek</div></a>
-    <a href="https://yuanbao.tencent.com" target="_blank" class="site-item"><div class="site-icon" style="color: #1e88e5;"><i class="fas fa-gem"></i></div><div class="site-name">腾讯元宝</div></a>
-    <a href="https://kimi.moonshot.cn" target="_blank" class="site-item"><div class="site-icon" style="color: #ffa726;"><i class="fas fa-moon"></i></div><div class="site-name">kimi</div></a>
-    <a href="https://gemini.google.com" target="_blank" class="site-item"><div class="site-icon" style="color: #4285f4;"><i class="fab fa-google"></i></div><div class="site-name">Google Gemini</div></a>
-    
-    <!-- 视频和直播网站 -->
-    <a href="https://www.youtube.com" target="_blank" class="site-item"><div class="site-icon" style="color: #ff0000;"><i class="fab fa-youtube"></i></div><div class="site-name">YouTube</div></a>
-    <a href="https://www.jrkan2023.com" target="_blank" class="site-item"><div class="site-icon" style="color: #ff9800;"><i class="fas fa-tv"></i></div><div class="site-name">JRKAN直播</div></a>
-    <a href="https://www.zhibo8.com" target="_blank" class="site-item"><div class="site-icon" style="color: #2196f3;"><i class="fas fa-play-circle"></i></div><div class="site-name">直播吧</div></a>
-    
-    <!-- 其他实用网站 -->
-    <a href="https://www.bilibili.com" target="_blank" class="site-item"><div class="site-icon" style="color: #fb7299;"><i class="fab fa-bilibili"></i></div><div class="site-name">哔哩哔哩</div></a>
-    <a href="https://github.com" target="_blank" class="site-item"><div class="site-icon" style="color: #333;"><i class="fab fa-github"></i></div><div class="site-name">GitHub</div></a>
-    <a href="https://www.jd.com" target="_blank" class="site-item"><div class="site-icon" style="color: #e6162d;"><i class="fas fa-shopping-cart"></i></div><div class="site-name">京东</div></a>
-    
-    <!-- 新增网站 -->
-    <a href="https://www.leijing.xyz/index" target="_blank" class="site-item"><div class="site-icon" style="color: #4caf50;"><i class="fas fa-whale"></i></div><div class="site-name">雷鲸小站</div></a>
-    <a href="https://www.haimianxz.com" target="_blank" class="site-item"><div class="site-icon" style="color: #9c27b0;"><i class="fas fa-cube"></i></div><div class="site-name">海绵小站</div></a>
-    <a href="https://dash.cloudflare.com" target="_blank" class="site-item"><div class="site-icon" style="color: #f44336;"><i class="fas fa-cloud"></i></div><div class="site-name">cloudflare</div></a>
-    <a href="https://my.dnshe.com/clientarea.php" target="_blank" class="site-item"><div class="site-icon" style="color: #3f51b5;"><i class="fas fa-server"></i></div><div class="site-name">DNSHE</div></a>
+    <div class="site-grid">
+      <a href="https://www.bing.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.bing.com&sz=128" alt="bing"></div><div class="site-name">必应搜索</div></a>
+      <a href="https://www.doubao.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.doubao.com&sz=128" alt="doubao"></div><div class="site-name">豆包</div></a>
+      <a href="https://www.deepseek.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.deepseek.com&sz=128" alt="deepseek"></div><div class="site-name">DeepSeek</div></a>
+      <a href="https://yuanbao.tencent.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=yuanbao.tencent.com&sz=128" alt="yuanbao"></div><div class="site-name">腾讯元宝</div></a>
+      <a href="https://kimi.moonshot.cn" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=kimi.moonshot.cn&sz=128" alt="kimi"></div><div class="site-name">Kimi</div></a>
+      <a href="https://gemini.google.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="gemini"></div><div class="site-name">Gemini</div></a>
+      <a href="https://www.youtube.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.youtube.com&sz=128" alt="youtube"></div><div class="site-name">YouTube</div></a>
+      <a href="https://www.jrkan2023.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.jrkan2023.com&sz=128" alt="jrkan"></div><div class="site-name">JRKAN直播</div></a>
+      <a href="https://www.zhibo8.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.zhibo8.com&sz=128" alt="zhibo8"></div><div class="site-name">直播吧</div></a>
+      <a href="https://www.bilibili.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.bilibili.com&sz=128" alt="bilibili"></div><div class="site-name">哔哩哔哩</div></a>
+      <a href="https://github.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" alt="github"></div><div class="site-name">GitHub</div></a>
+      <a href="https://www.jd.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.jd.com&sz=128" alt="jd"></div><div class="site-name">京东</div></a>
+      <a href="https://www.leijing.xyz/index" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.leijing.xyz&sz=128" alt="leijing"></div><div class="site-name">雷鲸小站</div></a>
+      <a href="https://www.haimianxz.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.haimianxz.com&sz=128" alt="haimian"></div><div class="site-name">海绵小站</div></a>
+      <a href="https://dash.cloudflare.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=dash.cloudflare.com&sz=128" alt="cloudflare"></div><div class="site-name">Cloudflare</div></a>
+      <a href="https://my.dnshe.com/clientarea.php" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=my.dnshe.com&sz=128" alt="dnshe"></div><div class="site-name">DNSHE</div></a>
+    </div>
   </div>
 
   <script>
-    // 高德地图API配置
-    const AMAP_KEY = 'fec8d520aa315f955cb85808c20bfb71';
-    
-    // 赣州市各区县adcode映射（用于精确到县区）
-    const GANZHOU_DISTRICTS = {
-      '章贡区': '360702',
-      '南康区': '360703',
-      '赣县区': '360704',
-      '信丰县': '360722',
-      '大余县': '360723',
-      '上犹县': '360724',
-      '崇义县': '360725',
-      '安远县': '360726',
-      '龙南市': '360727',
-      '定南县': '360728',
-      '全南县': '360729',
-      '宁都县': '360730',
-      '于都县': '360731',
-      '兴国县': '360732',
-      '会昌县': '360733',
-      '寻乌县': '360734',
-      '石城县': '360735',
-      '瑞金市': '360781'
-    };
-    
-    // 缓存数据
-    let cachedLocationData = null;
-    let cachedWeatherData = null;
-    let lastFetchTime = 0;
-    const CACHE_DURATION = 30 * 60 * 1000; // 30分钟缓存
-    
-    // 背景动图列表
-    const backgroundAnimations = [
-      // 当前使用的下雨动图
-      {
-        type: 'gif',
-        url: 'https://media.giphy.com/media/3o7aTskHEUdgCQAXde/giphy.gif',
-        name: '下雨',
-        overlayColor: 'linear-gradient(135deg, rgba(224, 247, 250, 0.9), rgba(178, 235, 242, 0.85))'
-      },
-      // 星空背景
-      {
-        type: 'gif',
-        url: 'https://media.giphy.com/media/l3vR85PnGsBwu1PFK/giphy.gif',
-        name: '星空',
-        overlayColor: 'linear-gradient(135deg, rgba(224, 247, 250, 0.85), rgba(178, 235, 242, 0.9))'
-      },
-      // 粒子背景
-      {
-        type: 'gif', 
-        url: 'https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif',
-        name: '粒子',
-        overlayColor: 'linear-gradient(135deg, rgba(240, 248, 255, 0.9), rgba(220, 240, 255, 0.85))'
-      }
-    ];
-    
-    let currentBgIndex = 0;
-    
-    // 搜索引擎配置
-    const searchEngines = {
-      bing: {
-        name: '必应',
-        url: 'https://www.bing.com/search?q=',
-        icon: 'fab fa-bing',
-        color: '#4285f4',
-        placeholder: '在必应中搜索内容...'
-      },
-      baidu: {
-        name: '百度',
-        url: 'https://www.baidu.com/s?wd=',
-        icon: 'fab fa-baidu',
-        color: '#2932e1',
-        placeholder: '在百度中搜索内容...'
-      },
-      google: {
-        name: 'Google',
-        url: 'https://www.google.com/search?q=',
-        icon: 'fab fa-google',
-        color: '#4285f4',
-        placeholder: '在Google中搜索内容...'
-      }
-    };
-    
-    let currentEngine = 'bing'; // 默认搜索引擎
-    
-    // 农历日期计算函数
-    function getLunarDate(date) {
-      // 简单的农历计算（简化版，仅用于演示）
-      // 在实际应用中，建议使用完整的农历库
-      const lunarMonths = [
-        '正月', '二月', '三月', '四月', '五月', '六月', 
-        '七月', '八月', '九月', '十月', '冬月', '腊月'
-      ];
-      
-      const lunarDays = [
-        '初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
-        '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
-        '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'
-      ];
-      
-      // 简单的干支计算（仅用于演示，实际需要完整算法）
-      const heavenlyStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
-      const earthlyBranches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-      
-      // 演示数据：模拟获取农历日期
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      
-      // 简单的农历计算（演示用，实际应使用农历库）
-      // 这里为了演示，使用固定值：农历十一月廿九
-      const lunarMonth = '十一月';
-      const lunarDay = '廿九';
-      
-      // 简单的干支计算（演示用）
-      // 这里为了演示，使用固定值：乙未
-      const ganzhi = '乙未';
-      
-      return {
-        month: lunarMonth,
-        day: lunarDay,
-        ganzhi: ganzhi
-      };
+    /* --- 全局逻辑 --- */
+    function getGreeting() {
+      const hour = new Date().getHours();
+      if (hour < 6) return '夜深了，注意休息 🌙';
+      if (hour < 9) return '早上好，新的一天加油 ☀️';
+      if (hour < 12) return '上午好，工作顺利 ☕';
+      if (hour < 14) return '中午好，记得午休 🍱';
+      if (hour < 17) return '下午好，继续保持 🚀';
+      if (hour < 19) return '傍晚好，放松一下 🌇';
+      return '晚上好，享受生活 ✨';
     }
-    
-    // 实时时间更新 - 按照图片格式显示
+
+    function getLunarDate(date) { const weeks = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']; return `${weeks[date.getDay()]}`; }
     function updateTime() {
       const now = new Date();
+      const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
+      const year = now.getFullYear();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      const weekStr = getLunarDate(now);
       
-      // 时间部分: 16:52:50
-      const timeStr = now.toLocaleTimeString('zh-CN', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      });
-      
-      // 日期部分: 01月17日 星期六
-      const monthStr = (now.getMonth() + 1).toString().padStart(2, '0');
-      const dayStr = now.getDate().toString().padStart(2, '0');
-      const weekArr = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-      const weekStr = weekArr[now.getDay()];
-      
-      // 获取农历日期
-      const lunarDate = getLunarDate(now);
-      
-      // 组合成完整的日期字符串: 01月17日 星期六 十一月廿九 乙未
-      const dateStr = `${monthStr}月${dayStr}日 ${weekStr} ${lunarDate.month}${lunarDate.day} ${lunarDate.ganzhi}`;
-      
-      // 更新页面显示
       document.getElementById('clock').textContent = timeStr;
-      document.getElementById('date').textContent = dateStr;
-    }
-    
-    updateTime();
-    setInterval(updateTime, 1000);
-
-    // 切换搜索引擎
-    function switchSearchEngine(engine) {
-      currentEngine = engine;
-      const engineConfig = searchEngines[engine];
-      
-      // 更新下拉菜单标签
-      const dropdownLabel = document.getElementById('dropdown-label');
-      dropdownLabel.innerHTML = `<i class="${engineConfig.icon}"></i>${engineConfig.name}`;
-      
-      // 更新输入框占位符
-      document.getElementById('search-input').placeholder = engineConfig.placeholder;
-      
-      // 更新下拉菜单中的选中项
-      const dropdownItems = document.querySelectorAll('.dropdown-item');
-      dropdownItems.forEach(item => {
-        if (item.dataset.engine === engine) {
-          item.classList.add('active');
-        } else {
-          item.classList.remove('active');
-        }
-      });
-    }
-    
-    // 搜索功能
-    function doSearch() {
-      const keyword = document.getElementById('search-input').value.trim();
-      if (keyword) {
-        const engineConfig = searchEngines[currentEngine];
-        window.open(`${engineConfig.url}${encodeURIComponent(keyword)}`, '_blank');
-        document.getElementById('search-input').value = '';
-      }
-    }
-    
-    // 搜索按钮点击事件
-    document.getElementById('search-btn').addEventListener('click', doSearch);
-    
-    // 搜索框回车事件
-    document.getElementById('search-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') doSearch();
-    });
-    
-    // 下拉菜单显示/隐藏
-    const dropdown = document.getElementById('search-dropdown');
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    
-    dropdown.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dropdownMenu.classList.toggle('show');
-    });
-    
-    // 下拉菜单项点击事件
-    document.querySelectorAll('.dropdown-item').forEach(item => {
-      item.addEventListener('click', () => {
-        switchSearchEngine(item.dataset.engine);
-        dropdownMenu.classList.remove('show');
-      });
-    });
-    
-    // 点击页面其他区域关闭下拉菜单
-    document.addEventListener('click', () => {
-      dropdownMenu.classList.remove('show');
-    });
-    
-    // 阻止下拉菜单内部点击事件冒泡
-    dropdownMenu.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
-
-    // 获取位置和天气
-    async function getLocationAndWeather() {
-      const locationElement = document.querySelector('#location');
-      const weatherElement = document.querySelector('#weather');
-      const weatherIcon = document.querySelector('#weather i');
-      const locationLink = document.getElementById('location-link');
-      const weatherLink = document.getElementById('weather-link');
-      
-      // 显示加载状态
-      locationElement.textContent = '获取位置中...';
-      locationElement.className = 'loading';
-      weatherElement.textContent = '获取天气中...';
-      weatherElement.className = 'loading';
-      
-      // 检查缓存
-      const now = Date.now();
-      if (cachedLocationData && cachedWeatherData && (now - lastFetchTime) < CACHE_DURATION) {
-        displayCachedData();
-        return;
-      }
+      document.getElementById('date').textContent = `${year}年${month}月${day}日 ${weekStr}`;
       
       try {
-        // 方法1: 使用ip-api.com（免费、无需key、可获取县区）
-        let locationData = null;
-        let exactLocationText = '';
-        let cityCode = '360700'; // 默认赣州市
-        
-        try {
-          const ipApiResponse = await fetch('https://ip-api.com/json/?lang=zh-CN&fields=status,message,country,regionName,city,district,lat,lon,query');
-          
-          if (ipApiResponse.ok) {
-            locationData = await ipApiResponse.json();
-            
-            if (locationData.status === 'success') {
-              // 优先使用district（县区），如果没有则使用city（市）
-              if (locationData.district && locationData.district !== '') {
-                exactLocationText = `${locationData.regionName}${locationData.city}${locationData.district}`;
-                // 尝试从赣州市区县映射中获取adcode
-                for (const [districtName, adcode] of Object.entries(GANZHOU_DISTRICTS)) {
-                  if (locationData.district.includes(districtName)) {
-                    cityCode = adcode;
-                    break;
-                  }
-                }
-              } else if (locationData.city) {
-                exactLocationText = `${locationData.regionName}${locationData.city}`;
-                // 如果是赣州市，默认使用章贡区
-                if (locationData.city.includes('赣州')) {
-                  cityCode = '360702'; // 章贡区
-                }
-              } else {
-                exactLocationText = `${locationData.regionName}`;
-              }
-            }
-          }
-        } catch (ipApiError) {
-          console.warn('ip-api.com定位失败:', ipApiError);
+        if(window.Lunar) {
+          const d = Lunar.fromDate(now);
+          const lunarStr = `农历 ${d.getYearInGanZhi()}年 [${d.getYearShengXiao()}] ${d.getMonthInChinese()}月${d.getDayInChinese()}`;
+          document.getElementById('lunar').textContent = lunarStr;
         }
-        
-        // 方法2: 如果ip-api失败，使用高德IP定位
-        if (!exactLocationText) {
-          try {
-            const amapUrl = `https://restapi.amap.com/v3/ip?key=${AMAP_KEY}`;
-            const amapResponse = await fetch(amapUrl);
-            
-            if (amapResponse.ok) {
-              const amapData = await amapResponse.json();
-              
-              if (amapData.status === '1') {
-                if (amapData.province && amapData.city) {
-                  if (amapData.province === amapData.city) {
-                    exactLocationText = `${amapData.province}`;
-                  } else {
-                    const province = amapData.province.replace(/[省|市|自治区|特别行政区]$/, '');
-                    const city = amapData.city.replace(/[市|地区|盟|州]$/, '');
-                    exactLocationText = `${province}${city}`;
-                  }
-                  cityCode = amapData.adcode || '360700';
-                }
-              }
-            }
-          } catch (amapError) {
-            console.warn('高德定位失败:', amapError);
-          }
-        }
-        
-        // 方法3: 如果以上都失败，使用默认位置（江西赣州章贡区）
-        if (!exactLocationText) {
-          exactLocationText = '江西赣州章贡区';
-          cityCode = '360702';
-        }
-        
-        // 设置位置链接（跳转到百度地图）
-        const baiduMapUrl = `https://map.baidu.com/search/${encodeURIComponent(exactLocationText)}`;
-        locationLink.href = baiduMapUrl;
-        
-        locationElement.textContent = exactLocationText;
-        locationElement.classList.remove('loading');
-        
-        // 获取天气信息
-        try {
-          // 使用高德天气API
-          const weatherUrl = `https://restapi.amap.com/v3/weather/weatherInfo?key=${AMAP_KEY}&city=${cityCode}&extensions=base`;
-          const weatherResponse = await fetch(weatherUrl);
-          
-          if (weatherResponse.ok) {
-            const weatherData = await weatherResponse.json();
-            
-            if (weatherData.status === '1' && weatherData.lives && weatherData.lives.length > 0) {
-              const weatherInfo = weatherData.lives[0];
-              const temp = weatherInfo.temperature;
-              const weatherDesc = weatherInfo.weather;
-              
-              // 显示天气信息
-              weatherElement.textContent = `${weatherDesc} ${temp}℃`;
-              
-              // 设置天气链接（使用腾讯天气）
-              const weatherDetailUrl = `https://tianqi.qq.com/?city=${encodeURIComponent(exactLocationText.replace(/[省市区县]/g, ''))}`;
-              weatherLink.href = weatherDetailUrl;
-              
-              // 更新天气图标
-              updateWeatherIconByAmap(weatherIcon, weatherDesc);
-              
-              // 缓存数据
-              cachedLocationData = {
-                locationText: exactLocationText,
-                cityCode,
-                mapUrl: baiduMapUrl,
-                weatherUrl: weatherDetailUrl
-              };
-              cachedWeatherData = {
-                temp,
-                weatherDesc
-              };
-              lastFetchTime = now;
-            } else {
-              throw new Error('天气数据解析失败');
-            }
-          } else {
-            throw new Error('天气API请求失败');
-          }
-        } catch (weatherError) {
-          console.warn('天气获取失败:', weatherError);
-          showFallbackWeather(cityCode, exactLocationText);
-        }
-        
-        weatherElement.classList.remove('loading');
-        
-      } catch (error) {
-        console.error('获取位置信息失败:', error);
-        showErrorInfo();
+      } catch(e) {}
+
+      if(now.getSeconds() === 0) { document.getElementById('greeting').textContent = getGreeting(); }
+    }
+    document.getElementById('greeting').textContent = getGreeting();
+    setInterval(updateTime, 1000); updateTime();
+
+    /* --- 1. 每日一言 (Hitokoto) --- */
+    function fetchHitokoto() {
+      fetch('https://v1.hitokoto.cn/?c=i&c=d') // i=诗词, d=文学
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('hitokoto-text').textContent = data.hitokoto;
+        })
+        .catch(() => {
+          document.getElementById('hitokoto-text').textContent = "生活明朗，万物可爱。";
+        });
+    }
+    document.getElementById('hitokoto-box').addEventListener('click', fetchHitokoto);
+    fetchHitokoto(); // 初始加载
+
+    /* --- 2. 侧边栏与待办逻辑 --- */
+    function toggleDrawer(id) {
+      const drawer = document.getElementById(id);
+      const isOpen = drawer.classList.contains('open');
+      // 关闭所有 drawer
+      document.querySelectorAll('.sidebar-drawer').forEach(d => d.classList.remove('open'));
+      // 如果之前没打开，则打开当前
+      if (!isOpen) drawer.classList.add('open');
+    }
+    
+    document.getElementById('btn-todo').addEventListener('click', (e) => { e.stopPropagation(); toggleDrawer('drawer-todo'); });
+    document.getElementById('btn-hot').addEventListener('click', (e) => { e.stopPropagation(); toggleDrawer('drawer-hot'); });
+    // 点击外部关闭侧边栏
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.sidebar-drawer') && !e.target.closest('.tool-btn')) {
+        document.querySelectorAll('.sidebar-drawer').forEach(d => d.classList.remove('open'));
       }
-    }
-    
-    // 显示缓存的数据
-    function displayCachedData() {
-      const locationElement = document.querySelector('#location');
-      const weatherElement = document.querySelector('#weather');
-      const weatherIcon = document.querySelector('#weather i');
-      const locationLink = document.getElementById('location-link');
-      const weatherLink = document.getElementById('weather-link');
-      
-      locationElement.textContent = cachedLocationData.locationText;
-      locationElement.classList.remove('loading');
-      locationLink.href = cachedLocationData.mapUrl;
-      
-      weatherElement.textContent = `${cachedWeatherData.weatherDesc} ${cachedWeatherData.temp}℃`;
-      updateWeatherIconByAmap(weatherIcon, cachedWeatherData.weatherDesc);
-      weatherElement.classList.remove('loading');
-      weatherLink.href = cachedLocationData.weatherUrl;
-    }
-    
-    // 显示备用天气信息
-    function showFallbackWeather(cityCode, locationText) {
-      const weatherElement = document.querySelector('#weather');
-      const weatherIcon = document.querySelector('#weather i');
-      const weatherLink = document.getElementById('weather-link');
-      
-      // 根据季节显示大致天气
-      const month = new Date().getMonth() + 1;
-      let season = '';
-      let tempRange = '';
-      
-      if (month >= 3 && month <= 5) {
-        season = '春季';
-        tempRange = '15-25°C';
-      } else if (month >= 6 && month <= 8) {
-        season = '夏季';
-        tempRange = '25-35°C';
-      } else if (month >= 9 && month <= 11) {
-        season = '秋季';
-        tempRange = '15-28°C';
-      } else {
-        season = '冬季';
-        tempRange = '5-15°C';
-      }
-      
-      weatherElement.textContent = `${season} ${tempRange}`;
-      weatherIcon.className = 'fas fa-cloud-sun weather-icon';
-      weatherIcon.style.color = '#ff9800';
-      weatherElement.classList.remove('loading');
-      
-      // 设置备用天气链接（使用腾讯天气）
-      weatherLink.href = `https://tianqi.qq.com/?city=${encodeURIComponent('赣州')}`;
-    }
-    
-    // 显示错误信息
-    function showErrorInfo() {
-      const locationElement = document.querySelector('#location');
-      const weatherElement = document.querySelector('#weather');
-      const locationLink = document.getElementById('location-link');
-      const weatherLink = document.getElementById('weather-link');
-      
-      locationElement.textContent = '江西赣州章贡区';
-      locationElement.classList.remove('loading');
-      locationElement.classList.remove('error');
-      locationLink.href = 'https://map.baidu.com/search/江西赣州章贡区';
-      
-      weatherElement.textContent = '多云 22℃';
-      weatherElement.classList.remove('loading');
-      weatherElement.classList.remove('error');
-      weatherLink.href = 'https://tianqi.qq.com/?city=赣州';
-      
-      // 设置默认图标
-      const weatherIcon = document.querySelector('#weather i');
-      weatherIcon.className = 'fas fa-cloud-sun weather-icon';
-      weatherIcon.style.color = '#ff9800';
-    }
-    
-    // 根据高德天气描述更新图标
-    function updateWeatherIconByAmap(iconElement, weatherDesc) {
-      const desc = weatherDesc || '';
-      
-      // 清除之前的颜色设置
-      iconElement.style.color = '';
-      
-      // 高德天气状态映射
-      if (desc.includes('晴')) {
-        if (desc.includes('多云') || desc.includes('间')) {
-          iconElement.className = 'fas fa-cloud-sun weather-icon';
-          iconElement.style.color = '#ff9800';
-        } else {
-          iconElement.className = 'fas fa-sun weather-icon';
-          iconElement.style.color = '#ff9800';
-        }
-      } else if (desc.includes('多云')) {
-        iconElement.className = 'fas fa-cloud weather-icon';
-        iconElement.style.color = '#78909c';
-      } else if (desc.includes('阴')) {
-        iconElement.className = 'fas fa-cloud weather-icon';
-        iconElement.style.color = '#607d8b';
-      } else if (desc.includes('雨')) {
-        if (desc.includes('雷')) {
-          iconElement.className = 'fas fa-bolt weather-icon';
-          iconElement.style.color = '#ff9800';
-        } else if (desc.includes('小雨') || desc.includes('阵雨')) {
-          iconElement.className = 'fas fa-cloud-rain weather-icon';
-          iconElement.style.color = '#4285f4';
-        } else if (desc.includes('中雨')) {
-          iconElement.className = 'fas fa-cloud-rain weather-icon';
-          iconElement.style.color = '#1a73e8';
-        } else if (desc.includes('大雨') || desc.includes('暴雨')) {
-          iconElement.className = 'fas fa-cloud-showers-heavy weather-icon';
-          iconElement.style.color = '#0d47a1';
-        } else {
-          iconElement.className = 'fas fa-cloud-rain weather-icon';
-          iconElement.style.color = '#4285f4';
-        }
-      } else if (desc.includes('雪')) {
-        iconElement.className = 'fas fa-snowflake weather-icon';
-        iconElement.style.color = '#b2ebf2';
-      } else if (desc.includes('雾') || desc.includes('霾')) {
-        iconElement.className = 'fas fa-smog weather-icon';
-        iconElement.style.color = '#9e9e9e';
-      } else if (desc.includes('沙') || desc.includes('尘')) {
-        iconElement.className = 'fas fa-wind weather-icon';
-        iconElement.style.color = '#8d6e63';
-      } else {
-        // 默认图标
-        iconElement.className = 'fas fa-cloud-sun weather-icon';
-        iconElement.style.color = '#ff9800';
-      }
-    }
-    
-    // 刷新按钮功能
-    document.getElementById('refresh-btn').addEventListener('click', () => {
-      // 清除缓存
-      cachedLocationData = null;
-      cachedWeatherData = null;
-      lastFetchTime = 0;
-      
-      // 显示刷新状态
-      const refreshBtn = document.getElementById('refresh-btn');
-      refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-      
-      // 重新获取
-      getLocationAndWeather().finally(() => {
-        // 恢复按钮状态
-        setTimeout(() => {
-          refreshBtn.innerHTML = '<i class="fas fa-redo-alt"></i>';
-        }, 500);
-      });
     });
-    
-    // 背景切换功能
-    function setupBackgroundToggle() {
-      const bgToggle = document.getElementById('bg-toggle');
-      const bgAnimation = document.getElementById('bg-animation');
-      const bgOverlay = document.getElementById('bg-overlay');
-      
-      bgToggle.addEventListener('click', () => {
-        // 循环切换背景
-        currentBgIndex = (currentBgIndex + 1) % backgroundAnimations.length;
-        const bg = backgroundAnimations[currentBgIndex];
-        
-        // 更新背景
-        bgAnimation.style.backgroundImage = `url('${bg.url}')`;
-        bgOverlay.style.background = bg.overlayColor;
-        
-        // 显示通知
-        showNotification(`已切换到 ${bg.name} 背景`);
-      });
-    }
-    
-    // 显示通知
-    function showNotification(message) {
-      // 移除已有的通知
-      const existingNotification = document.querySelector('.bg-notification');
-      if (existingNotification) {
-        existingNotification.remove();
-      }
-      
-      // 创建新通知
-      const notification = document.createElement('div');
-      notification.className = 'bg-notification';
-      notification.textContent = message;
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: rgba(255, 255, 255, 0.9);
-        color: #263238;
-        padding: 10px 20px;
-        border-radius: 20px;
-        z-index: 1000;
-        font-size: 14px;
-        animation: fadeInOut 3s ease;
-        border: 1px solid rgba(66, 133, 244, 0.3);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      `;
-      
-      // 添加动画样式
-      if (!document.querySelector('#notification-animation')) {
-        const style = document.createElement('style');
-        style.id = 'notification-animation';
-        style.textContent = `
-          @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(-10px); }
-            10% { opacity: 1; transform: translateY(0); }
-            90% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-10px); }
-          }
+
+    // 待办数据操作
+    let todos = JSON.parse(localStorage.getItem('my_todos') || '[]');
+    const todoListEl = document.getElementById('todo-list');
+    const todoInput = document.getElementById('todo-input');
+
+    function renderTodos() {
+      todoListEl.innerHTML = '';
+      todos.forEach((todo, index) => {
+        const li = document.createElement('li');
+        li.className = `todo-item ${todo.done ? 'done' : ''}`;
+        li.innerHTML = `
+          <input type="checkbox" class="todo-checkbox" ${todo.done ? 'checked' : ''} onchange="toggleTodo(${index})">
+          <span class="todo-text">${todo.text}</span>
+          <i class="fas fa-trash todo-delete" onclick="deleteTodo(${index})"></i>
         `;
-        document.head.appendChild(style);
-      }
-      
-      document.body.appendChild(notification);
-      
-      // 3秒后移除通知
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 3000);
+        todoListEl.appendChild(li);
+      });
+      localStorage.setItem('my_todos', JSON.stringify(todos));
     }
-    
-    // 页面加载完成后获取位置和天气
-    document.addEventListener('DOMContentLoaded', () => {
-      getLocationAndWeather();
-      setupBackgroundToggle();
+
+    window.toggleTodo = function(index) {
+      todos[index].done = !todos[index].done;
+      renderTodos();
+    };
+    window.deleteTodo = function(index) {
+      todos.splice(index, 1);
+      renderTodos();
+    };
+    document.getElementById('todo-add').addEventListener('click', () => {
+      const text = todoInput.value.trim();
+      if(text) { todos.push({ text, done: false }); todoInput.value = ''; renderTodos(); }
     });
-    
-    // 每30分钟更新一次天气（避免频繁调用API）
-    setInterval(getLocationAndWeather, 30 * 60 * 1000);
+    todoInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('todo-add').click(); });
+    renderTodos(); // 初始渲染
+
+    /* --- 3. 热搜逻辑 (使用公共接口) --- */
+    async function fetchHotSearch() {
+      const listEl = document.getElementById('hot-list');
+      try {
+        // 使用 oioweb 免费接口
+        const res = await fetch('https://api.oioweb.cn/api/common/HotList?type=weiboHot');
+        const data = await res.json();
+        if(data.code === 200 && data.result) {
+          listEl.innerHTML = '';
+          // 取前15条
+          data.result.slice(0, 15).forEach((item, index) => {
+            const li = document.createElement('li');
+            li.className = 'hot-item';
+            li.innerHTML = `
+              <span class="hot-rank ${index < 3 ? 'top-3' : ''}">${index + 1}</span>
+              <a href="${item.href}" target="_blank" class="hot-link">${item.title}</a>
+              <span class="hot-score">🔥</span>
+            `;
+            listEl.appendChild(li);
+          });
+        } else { throw new Error('API Error'); }
+      } catch(e) {
+        listEl.innerHTML = '<li style="text-align:center;color:#999;">热搜加载失败，请稍后重试</li>';
+      }
+    }
+    // 打开热搜侧边栏时才加载
+    document.getElementById('btn-hot').addEventListener('click', () => {
+       if(!document.getElementById('hot-list').children.length || document.getElementById('hot-list').innerText.includes('正在获取')) {
+         fetchHotSearch();
+       }
+    });
+
+    /* --- 搜索、天气、背景 (保持原样) --- */
+    const searchConfig = {
+      bing: { url: 'https://www.bing.com/search?q=', icon: 'https://www.google.com/s2/favicons?domain=www.bing.com&sz=64', placeholder: '在必应中搜索内容...' },
+      google: { url: 'https://www.google.com/search?q=', icon: 'https://www.google.com/s2/favicons?domain=www.google.com&sz=64', placeholder: '在 Google 中搜索内容...' },
+      baidu: { url: 'https://www.baidu.com/s?wd=', icon: 'https://www.google.com/s2/favicons?domain=www.baidu.com&sz=64', placeholder: '在百度中搜索内容...' }
+    };
+    let currentEngine = 'bing';
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const engineSelector = document.getElementById('engine-selector');
+    const engineDropdown = document.getElementById('engine-dropdown');
+    const currentIcon = document.getElementById('current-icon');
+    const searchContainer = document.getElementById('search-container'); 
+
+    function closeMenu() {
+      engineDropdown.classList.remove('show');
+      engineSelector.classList.remove('active');
+      searchContainer.classList.remove('push-content');
+    }
+    function setEngine(key) {
+      currentEngine = key; const config = searchConfig[key];
+      currentIcon.src = config.icon; searchInput.placeholder = config.placeholder;
+      document.querySelectorAll('.engine-option').forEach(opt => {
+        if(opt.dataset.engine === key) opt.classList.add('selected'); else opt.classList.remove('selected');
+      });
+      closeMenu();
+    }
+    function doSearch() {
+      const val = searchInput.value.trim();
+      if(val) { window.open(searchConfig[currentEngine].url + encodeURIComponent(val), '_blank'); searchInput.value = ''; }
+    }
+    engineSelector.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isShowing = engineDropdown.classList.contains('show');
+      if (isShowing) { closeMenu(); } else { engineDropdown.classList.add('show'); engineSelector.classList.add('active'); searchContainer.classList.add('push-content'); }
+    });
+    document.querySelectorAll('.engine-option').forEach(item => { item.addEventListener('click', (e) => { e.stopPropagation(); setEngine(item.dataset.engine); }); });
+    document.addEventListener('click', closeMenu);
+    searchBtn.addEventListener('click', doSearch);
+    searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') doSearch(); });
+
+    const weatherMap = { 0: {text:'晴',icon:'fa-sun',color:'#ff9800'}, 1: {text:'多云',icon:'fa-cloud-sun',color:'#ff9800'}, 2: {text:'阴',icon:'fa-cloud',color:'#78909c'}, 3: {text:'阴',icon:'fa-cloud',color:'#78909c'}, 45: {text:'雾',icon:'fa-smog',color:'#90a4ae'}, 51: {text:'小雨',icon:'fa-cloud-rain',color:'#4285f4'}, 53: {text:'中雨',icon:'fa-cloud-showers-heavy',color:'#1976d2'}, 61: {text:'雨',icon:'fa-umbrella',color:'#1565c0'}, 63: {text:'大雨',icon:'fa-umbrella',color:'#0d47a1'}, 80: {text:'阵雨',icon:'fa-cloud-rain',color:'#4285f4'}, 95: {text:'雷雨',icon:'fa-bolt',color:'#fdd835'} };
+    async function initWeather() {
+      const locText = document.getElementById('location-text');
+      const weaText = document.getElementById('weather-text');
+      const weaIcon = document.querySelector('.weather-icon');
+      const refreshBtn = document.getElementById('refresh-btn');
+      refreshBtn.classList.add('fa-spin');
+      try {
+        let lat = 25.83, lon = 114.93, city = '赣州市';
+        try { const ipRes = await fetch('https://ipapi.co/json/'); if(ipRes.ok) { const ipData = await ipRes.json(); lat = ipData.latitude; lon = ipData.longitude; city = ipData.city || ipData.region || '本地'; } } catch(e) { console.log('IP定位失败'); }
+        locText.textContent = city;
+        document.getElementById('location-box').href = `https://www.bing.com/maps?q=${city}`;
+        const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`);
+        const wData = await wRes.json();
+        if (wData.current_weather) {
+          const info = weatherMap[wData.current_weather.weathercode] || {text:'未知',icon:'fa-cloud',color:'#78909c'};
+          weaText.textContent = `${info.text} ${wData.current_weather.temperature}°C`;
+          weaIcon.className = `fas ${info.icon} weather-icon`;
+          weaIcon.style.color = info.color;
+          document.getElementById('weather-box').href = `https://www.bing.com/search?q=${city}天气`;
+        }
+      } catch (error) { weaText.textContent = '暂无数据'; } finally { setTimeout(() => refreshBtn.classList.remove('fa-spin'), 1000); }
+    }
+    document.getElementById('refresh-btn').addEventListener('click', initWeather);
+    window.addEventListener('load', initWeather);
+
+    const bgs = [ 
+      { url: 'https://media.giphy.com/media/3o7aTskHEUdgCQAXde/giphy.gif', color: 'linear-gradient(135deg, rgba(224, 247, 250, 0.9), rgba(178, 235, 242, 0.85))' },
+      { url: 'https://media.giphy.com/media/l3vR85PnGsBwu1PFK/giphy.gif', color: 'linear-gradient(135deg, rgba(20, 20, 40, 0.8), rgba(40, 40, 80, 0.8))' },
+      { url: 'https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif', color: 'linear-gradient(135deg, rgba(255, 240, 240, 0.9), rgba(255, 220, 220, 0.85))' } 
+    ];
+    let bgIndex = 0;
+    document.getElementById('bg-toggle').addEventListener('click', () => {
+        bgIndex = (bgIndex + 1) % bgs.length;
+        document.getElementById('bg-animation').style.backgroundImage = `url('${bgs[bgIndex].url}')`;
+        document.getElementById('bg-overlay').style.background = bgs[bgIndex].color;
+        const isDark = bgIndex === 1; 
+        document.querySelector('.welcome-text').style.color = isDark ? '#82b1ff' : '#1565c0';
+        document.querySelector('.clock').style.color = isDark ? '#fff' : '#263238';
+    });
   </script>
 </body>
 </html>
