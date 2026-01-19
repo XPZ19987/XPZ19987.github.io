@@ -4,312 +4,139 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>小鹏子的桌面导航</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js"></script>
   
   <style>
-    /* 隐藏Hexo主题元素 */
-    #header, #navbar, #sidebar, #footer, .page-header, .site-nav, .sidebar-widget, .blog-info {
-      display: none !important;
-      visibility: hidden !important;
-      height: 0; width: 0; margin: 0; padding: 0; border: none;
-    }
+    /* 基础重置 */
+    #header, #navbar, #sidebar, #footer, .page-header, .site-nav, .sidebar-widget, .blog-info { display: none !important; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
-      font-family: "Noto Sans SC", "Microsoft Yahei", sans-serif;
+      font-family: "Microsoft Yahei", "PingFang SC", sans-serif;
       min-height: 100vh;
-      padding: 30px 20px;
+      padding: 40px 20px;
       position: relative;
       overflow-x: hidden;
-      background-color: #e0f7fa;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #333;
+      /* 背景：清爽的微蓝渐变 */
+      background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+      display: flex; flex-direction: column; align-items: center; color: #333;
     }
     
-    /* 背景动图层 */
-    .bg-animation {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden;
-    }
-    .bg-animation::before {
-      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background-image: url('https://media.giphy.com/media/3o7aTskHEUdgCQAXde/giphy.gif');
-      background-size: cover; background-position: center; background-repeat: no-repeat;
-      opacity: 0.7; filter: blur(1px);
-      transition: all 0.5s ease;
-    }
-    .bg-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(135deg, rgba(224, 247, 250, 0.85), rgba(178, 235, 242, 0.8));
-      z-index: -1;
-      transition: all 0.5s ease;
-    }
+    .main-container { width: 100%; max-width: 1050px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* 顶部区域 */
+    .top-area { text-align: center; margin-bottom: 45px; width: 100%; animation: fadeInUp 0.8s ease-out forwards; }
+    .welcome-text { font-size: 24px; font-weight: 700; color: #37474f; margin-bottom: 15px; letter-spacing: 1px; }
+    .clock { font-size: 64px; font-weight: 700; color: #263238; margin-bottom: 5px; font-feature-settings: "tnum"; letter-spacing: -2px; }
+    .date { font-size: 16px; color: #546e7a; margin-bottom: 8px; font-weight: 500; background: rgba(0,0,0,0.05); padding: 4px 16px; border-radius: 20px; display: inline-block; }
+    .lunar-date { font-size: 14px; color: #78909c; margin-bottom: 20px; font-weight: 500; display: block; opacity: 0.9; }
+
+    /* 每日一言 */
+    .hitokoto-container { margin-top: 15px; cursor: pointer; max-width: 80%; margin-left: auto; margin-right: auto; transition: opacity 0.3s; color: #555; }
+    .hitokoto-container:hover { opacity: 0.7; color: #1565c0; }
+    .hitokoto-text { font-size: 15px; font-style: italic; font-weight: 500; position: relative; display: inline-block; }
+    .hitokoto-text::before, .hitokoto-text::after { content: '"'; font-size: 20px; color: #aaa; margin: 0 5px; }
+
+    /* 搜索框 */
+    .search-box-container { position: relative; z-index: 100; width: 100%; max-width: 680px; margin: 0 auto 60px auto; transition: margin-bottom 0.4s; animation: fadeInUp 0.8s ease-out 0.2s forwards; opacity: 0; }
+    .search-box { display: flex; height: 58px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); background: #fff; border: 1px solid #f0f0f0; position: relative; align-items: center; transition: transform 0.2s, box-shadow 0.2s; }
+    .search-box:hover { box-shadow: 0 15px 40px rgba(0,0,0,0.12); transform: translateY(-1px); }
     
-    .main-container {
-      width: 100%; max-width: 1050px; display: flex; flex-direction: column; align-items: center;
-      position: relative; z-index: 1; padding-top: 2vh;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* 文字与时间 */
-    .top-area { 
-      text-align: center; margin-bottom: 35px; width: 100%; 
-      animation: fadeInUp 0.8s ease-out forwards;
-    }
+    .search-engine-selector { height: 100%; display: flex; align-items: center; padding: 0 16px 0 22px; cursor: pointer; border-right: 1px solid #f5f5f5; position: relative; border-top-left-radius: 20px; border-bottom-left-radius: 20px; }
+    .search-engine-selector:hover { background: #fafafa; }
     
-    .welcome-text {
-      font-size: 26px; font-weight: 700; color: #1565c0; margin-bottom: 15px;
-      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8); letter-spacing: 1px;
-    }
+    /* SVG 图标通用样式 */
+    .engine-svg { width: 24px; height: 24px; margin-right: 10px; display: none; }
+    .engine-svg.active { display: block; }
     
-    .clock {
-      font-size: 52px; font-weight: 700; color: #263238; margin-bottom: 5px;
-      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
-      font-feature-settings: "tnum"; font-variant-numeric: tabular-nums;
-      letter-spacing: -1px;
-    }
-    
-    .date {
-      font-size: 16px; color: #546e7a; margin-bottom: 8px;
-      font-weight: 500; letter-spacing: 1px;
-      background: rgba(255,255,255,0.4); padding: 4px 14px; border-radius: 20px;
-      display: inline-block;
-    }
-
-    .lunar-date {
-      font-size: 14px; color: #546e7a; margin-bottom: 15px;
-      font-weight: 500; letter-spacing: 1px;
-      background: rgba(255,255,255,0.3); padding: 3px 12px; border-radius: 20px;
-      display: inline-block; opacity: 0.9;
-    }
-
-    /* --- 1. 每日一言样式 --- */
-    .hitokoto-container {
-      margin-bottom: 25px;
-      cursor: pointer;
-      max-width: 80%;
-      margin-left: auto; margin-right: auto;
-      transition: opacity 0.3s;
-    }
-    .hitokoto-container:hover { opacity: 0.8; }
-    .hitokoto-text {
-      font-size: 16px; color: #455a64; font-style: italic; font-weight: 500;
-      text-shadow: 0 1px 1px rgba(255,255,255,0.8);
-      position: relative; display: inline-block;
-    }
-    .hitokoto-text::before, .hitokoto-text::after {
-      content: '"'; font-size: 20px; color: #1565c0; margin: 0 5px; opacity: 0.6;
-    }
-
-    /* 位置天气 */
-    .location-weather { display: flex; align-items: center; justify-content: center; gap: 15px; }
-    .info-capsule {
-      display: flex; align-items: center; gap: 8px; text-decoration: none; color: #37474f;
-      background: rgba(255, 255, 255, 0.7); padding: 8px 18px; border-radius: 24px;
-      backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 4px 12px rgba(66, 133, 244, 0.08); font-size: 14px; font-weight: 500;
-      transition: all 0.3s ease; cursor: default;
-    }
-    .info-capsule:hover { background: rgba(255, 255, 255, 0.95); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(66, 133, 244, 0.2); }
-    .location-icon { color: #4285f4; }
-    .weather-icon { color: #ff9800; }
-    .refresh-btn {
-      background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.8);
-      color: #546e7a; cursor: pointer; width: 36px; height: 36px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.08);
-    }
-    .refresh-btn:hover { background: #fff; color: #4285f4; transform: rotate(180deg) scale(1.1); }
-
-    /* 搜索框容器 */
-    .search-box-container {
-      position: relative; z-index: 100; width: 100%; max-width: 680px;
-      margin: 0 auto 50px auto; 
-      transition: margin-bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      animation: fadeInUp 0.8s ease-out 0.2s forwards; opacity: 0;
-    }
-    .search-box-container.push-content { margin-bottom: 180px; }
-
-    .search-box {
-      display: flex; height: 56px; border-radius: 18px;
-      box-shadow: 0 15px 35px rgba(66, 133, 244, 0.12);
-      background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.8); position: relative; align-items: center;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .search-box:hover { box-shadow: 0 20px 45px rgba(66, 133, 244, 0.18); transform: translateY(-1px); }
-
-    .search-engine-selector {
-      height: 100%; display: flex; align-items: center; padding: 0 14px 0 20px;
-      cursor: pointer; border-right: 1px solid rgba(0,0,0,0.06); position: relative;
-      border-top-left-radius: 18px; border-bottom-left-radius: 18px; transition: background 0.2s;
-    }
-    .search-engine-selector:hover { background: rgba(0,0,0,0.03); }
-    .current-engine-icon { width: 24px; height: 24px; margin-right: 8px; border-radius: 4px; object-fit: contain; }
-    .selector-arrow { font-size: 10px; color: #90a4ae; transition: transform 0.3s; }
+    .selector-arrow { font-size: 10px; color: #bbb; transition: transform 0.3s; }
     .search-engine-selector.active .selector-arrow { transform: rotate(180deg); }
-
-    .search-input {
-      flex: 1; height: 100%; border: none; outline: none; font-size: 16px; color: #333;
-      background: transparent; padding: 0 20px; font-family: inherit;
-    }
-    .search-input::placeholder { color: #90a4ae; font-size: 15px; }
-
-    .search-btn {
-      width: 64px; height: 100%; border: none; background: #4285f4; color: white;
-      border-top-right-radius: 18px; border-bottom-right-radius: 18px; cursor: pointer;
-      font-size: 18px; transition: all 0.2s;
-    }
-    .search-btn:hover { background: #3367d6; width: 70px; }
-
-    .engine-dropdown {
-      position: absolute; top: 125%; left: 0; width: 140px;
-      background: rgba(255, 255, 255, 0.95); border-radius: 14px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); padding: 8px;
-      display: none; flex-direction: column; border: 1px solid rgba(255,255,255,0.9); z-index: 200;
-      backdrop-filter: blur(15px);
-    }
-    .engine-dropdown.show { display: flex; animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    .engine-option { display: flex; align-items: center; gap: 12px; padding: 10px 12px; font-size: 14px; color: #546e7a; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
-    .engine-option:hover { background: #eef5ff; color: #1565c0; transform: translateX(3px); }
-    .engine-option.selected { background: #e3f2fd; color: #1565c0; font-weight: 600; }
-    .engine-icon { width: 20px; height: 20px; border-radius: 3px; object-fit: contain; }
-
-    /* 网格样式 */
-    .site-grid {
-      width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 40px 20px; justify-items: center; padding: 0 20px;
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      animation: fadeInUp 0.8s ease-out 0.4s forwards; opacity: 0;
-    }
-    .site-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #263238; width: 90px; }
-    .site-icon {
-      width: 64px; height: 64px; border-radius: 20px;
-      background: rgba(255, 255, 255, 0.8);
-      display: flex; justify-content: center; align-items: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.06); margin-bottom: 14px;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden;
-      backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.6);
-    }
-    .site-icon img { width: 36px; height: 36px; object-fit: contain; border-radius: 6px; }
-    .site-item:hover .site-icon { transform: translateY(-8px) scale(1.05); box-shadow: 0 15px 30px rgba(66, 133, 244, 0.25); background: #fff; border-color: #fff; }
-    .site-name {
-      font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      width: 100%; text-align: center; background: rgba(255, 255, 255, 0.5);
-      padding: 4px 10px; border-radius: 12px; font-weight: 500; color: #455a64; transition: all 0.3s;
-    }
-    .site-item:hover .site-name { background: rgba(255, 255, 255, 0.95); color: #1565c0; }
-
-    /* --- 右侧悬浮功能区 (To-Do + 热搜) --- */
-    .side-tools {
-      position: fixed; top: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 500;
-    }
-    .tool-btn {
-      width: 44px; height: 44px; border-radius: 50%; border: none;
-      background: rgba(255,255,255,0.7); backdrop-filter: blur(5px);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer;
-      color: #546e7a; font-size: 18px; transition: all 0.3s;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .tool-btn:hover { background: #fff; color: #1565c0; transform: scale(1.1); }
     
-    /* 侧边栏抽屉 */
-    .sidebar-drawer {
-      position: fixed; top: 0; right: -350px; width: 320px; height: 100%;
-      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
-      box-shadow: -5px 0 30px rgba(0,0,0,0.1); z-index: 1000;
-      transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      padding: 20px; display: flex; flex-direction: column;
+    .search-input { flex: 1; height: 100%; border: none; outline: none; font-size: 17px; color: #333; background: transparent; padding: 0 20px; }
+    .search-btn { width: 70px; height: 100%; border: none; background: #3b82f6; color: white; border-top-right-radius: 20px; border-bottom-right-radius: 20px; cursor: pointer; font-size: 20px; transition: background 0.2s; }
+    .search-btn:hover { background: #2563eb; }
+
+    /* 下拉菜单 */
+    .engine-dropdown { position: absolute; top: 125%; left: 0; width: 150px; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 8px; display: none; flex-direction: column; z-index: 200; border: 1px solid #eee; }
+    .engine-dropdown.show { display: flex; animation: fadeIn 0.2s; }
+    .engine-option { display: flex; align-items: center; gap: 12px; padding: 12px; font-size: 15px; color: #555; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+    .engine-option:hover { background: #eff6ff; color: #3b82f6; }
+    .engine-option.selected { background: #eff6ff; color: #3b82f6; font-weight: 600; }
+    .engine-option svg { width: 20px; height: 20px; }
+
+    /* 网站图标网格 */
+    .site-grid { width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 35px 25px; justify-items: center; padding: 0 20px; transition: transform 0.4s; animation: fadeInUp 0.8s ease-out 0.4s forwards; opacity: 0; }
+    .site-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #444; width: 95px; }
+    
+    .site-icon { 
+      width: 68px; height: 68px; border-radius: 22px; 
+      background: #fff; display: flex; justify-content: center; align-items: center; 
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06); margin-bottom: 12px; 
+      transition: all 0.3s; position: relative; overflow: hidden; 
+      border: 1px solid #f5f5f5;
     }
+    
+    /* 网站图标中的 SVG 样式 */
+    .site-icon svg { width: 34px; height: 34px; transition: transform 0.3s; }
+    .site-icon img { width: 36px; height: 36px; object-fit: contain; border-radius: 6px; z-index: 2; transition: transform 0.3s; }
+    .site-icon i { font-size: 34px; display: none; z-index: 1; } 
+    
+    .site-item:hover .site-icon { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15); border-color: #e0e7ff; }
+    .site-item:hover .site-icon img, .site-item:hover .site-icon svg { transform: scale(1.1); }
+    .site-name { font-size: 13px; text-align: center; color: #666; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+    .site-item:hover .site-name { color: #3b82f6; }
+
+    /* 侧边功能 (只保留待办) */
+    .side-tools { position: fixed; top: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 500; }
+    .tool-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer; color: #666; font-size: 18px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+    .tool-btn:hover { background: #3b82f6; color: #fff; transform: scale(1.1); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
+
+    /* 待办抽屉 */
+    .sidebar-drawer { position: fixed; top: 0; right: -360px; width: 320px; height: 100%; background: #fff; box-shadow: -5px 0 30px rgba(0,0,0,0.08); z-index: 1000; transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px; display: flex; flex-direction: column; }
     .sidebar-drawer.open { right: 0; }
-    .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f5f5f5; }
     .drawer-title { font-size: 18px; font-weight: 700; color: #333; }
-    .close-drawer { cursor: pointer; color: #999; font-size: 20px; transition: color 0.2s; }
+    .close-drawer { cursor: pointer; color: #aaa; font-size: 20px; transition: color 0.2s; }
     .close-drawer:hover { color: #333; }
 
-    /* 待办清单样式 */
-    .todo-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-    .todo-input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
-    .todo-add-btn { background: #4285f4; color: #fff; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; }
-    .todo-list { list-style: none; overflow-y: auto; flex: 1; }
-    .todo-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px dashed #eee; animation: fadeIn 0.3s; }
-    .todo-checkbox { margin-right: 10px; cursor: pointer; }
-    .todo-text { flex: 1; font-size: 14px; color: #333; word-break: break-all; }
-    .todo-item.done .todo-text { text-decoration: line-through; color: #aaa; }
-    .todo-delete { color: #ff5252; cursor: pointer; font-size: 12px; opacity: 0; transition: opacity 0.2s; padding: 5px; }
+    .todo-input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+    .todo-input { flex: 1; padding: 10px 14px; border: 1px solid #eee; border-radius: 10px; outline: none; background: #fafafa; font-size: 14px; transition: all 0.2s; }
+    .todo-input:focus { background: #fff; border-color: #3b82f6; }
+    .todo-add-btn { background: #3b82f6; color: #fff; border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; transition: background 0.2s; }
+    .todo-add-btn:hover { background: #2563eb; }
+    .todo-list { list-style: none; overflow-y: auto; flex: 1; padding-right: 5px; }
+    .todo-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f9f9f9; animation: fadeIn 0.3s; }
+    .todo-checkbox { margin-right: 12px; cursor: pointer; width: 16px; height: 16px; accent-color: #3b82f6; }
+    .todo-text { flex: 1; font-size: 14px; color: #444; word-break: break-all; transition: color 0.2s; }
+    .todo-item.done .todo-text { text-decoration: line-through; color: #bbb; }
+    .todo-delete { color: #ff4757; cursor: pointer; font-size: 14px; opacity: 0; padding: 5px; transition: opacity 0.2s; }
     .todo-item:hover .todo-delete { opacity: 1; }
 
-    /* 热搜列表样式 */
-    .hot-list { list-style: none; overflow-y: auto; flex: 1; padding-right: 5px; }
-    .hot-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; transition: background 0.2s; }
-    .hot-rank { width: 24px; font-weight: 700; font-size: 16px; color: #ff9800; font-style: italic; }
-    .hot-rank.top-3 { color: #ff5252; }
-    .hot-link { flex: 1; text-decoration: none; color: #455a64; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .hot-link:hover { color: #1565c0; }
-    .hot-score { font-size: 12px; color: #90a4ae; margin-left: 10px; }
-
     @media (max-width: 480px) {
-      .welcome-text { font-size: 20px; }
-      .clock { font-size: 40px; }
-      .search-box-container { margin-bottom: 30px; }
-      .site-grid { gap: 25px 15px; grid-template-columns: repeat(4, 1fr); }
-      .site-icon { width: 52px; height: 52px; }
-      .site-icon img { width: 28px; height: 28px; }
-      .search-box-container.push-content { margin-bottom: 160px; }
-      .side-tools { top: auto; bottom: 80px; right: 20px; } /* 手机端把工具放下面，避免挡住 */
+      .clock { font-size: 48px; }
+      .site-grid { gap: 20px 15px; grid-template-columns: repeat(4, 1fr); }
+      .side-tools { top: auto; bottom: 40px; right: 20px; }
       .sidebar-drawer { width: 85%; right: -100%; }
     }
-    
-    .bg-toggle {
-      position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.8);
-      border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; z-index: 100;
-      color: #555; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s;
-      backdrop-filter: blur(5px);
-    }
-    .bg-toggle:hover { transform: scale(1.1) rotate(90deg); background: #fff; color: #4285f4; }
   </style>
 </head>
 <body>
-  <div class="bg-animation" id="bg-animation"></div>
-  <div class="bg-overlay" id="bg-overlay"></div>
-  
   <div class="side-tools">
-    <button class="tool-btn" id="btn-todo" title="待办清单"><i class="fas fa-tasks"></i></button>
-    <button class="tool-btn" id="btn-hot" title="全网热搜"><i class="fab fa-hotjar"></i></button>
+    <button class="tool-btn" id="btn-todo" title="待办清单"><i class="fas fa-check-square"></i></button>
   </div>
-  <button class="bg-toggle" id="bg-toggle" title="切换背景"><i class="fas fa-image"></i></button>
 
   <div class="sidebar-drawer" id="drawer-todo">
     <div class="drawer-header">
-      <div class="drawer-title">📝 待办清单</div>
+      <div class="drawer-title">📝 待办事项</div>
       <i class="fas fa-times close-drawer" onclick="toggleDrawer('drawer-todo')"></i>
     </div>
     <div class="todo-input-group">
-      <input type="text" class="todo-input" id="todo-input" placeholder="输入任务，回车添加...">
+      <input type="text" class="todo-input" id="todo-input" placeholder="添加新任务...">
       <button class="todo-add-btn" id="todo-add"><i class="fas fa-plus"></i></button>
     </div>
-    <ul class="todo-list" id="todo-list">
-      </ul>
-  </div>
-
-  <div class="sidebar-drawer" id="drawer-hot">
-    <div class="drawer-header">
-      <div class="drawer-title">🔥 微博热搜</div>
-      <i class="fas fa-times close-drawer" onclick="toggleDrawer('drawer-hot')"></i>
-    </div>
-    <ul class="hot-list" id="hot-list">
-      <li style="text-align:center; color:#999; margin-top:20px;">正在获取热搜...</li>
-    </ul>
+    <ul class="todo-list" id="todo-list"></ul>
   </div>
 
   <div class="main-container">
@@ -317,41 +144,33 @@
       <div class="welcome-text" id="greeting">欢迎来到小鹏子的网站</div>
       <div class="clock" id="clock">00:00:00</div>
       <div class="date" id="date">加载中...</div>
-      <div><div class="lunar-date" id="lunar">农历加载中...</div></div>
-      
+      <div class="lunar-date" id="lunar"></div>
       <div class="hitokoto-container" id="hitokoto-box" title="点击切换">
         <div class="hitokoto-text" id="hitokoto-text">正在加载一言...</div>
-      </div>
-
-      <div class="location-weather">
-        <a class="info-capsule" id="location-box" target="_blank">
-          <i class="fas fa-map-marker-alt location-icon"></i>
-          <span id="location-text">定位中...</span>
-        </a>
-        <a class="info-capsule" id="weather-box" target="_blank">
-          <i class="fas fa-cloud weather-icon"></i>
-          <span id="weather-text">--°C</span>
-        </a>
-        <button class="refresh-btn" id="refresh-btn" title="更新天气">
-          <i class="fas fa-sync-alt"></i>
-        </button>
       </div>
     </div>
 
     <div class="search-box-container" id="search-container">
       <div class="search-box">
         <div class="search-engine-selector" id="engine-selector">
-          <img src="https://www.google.com/s2/favicons?domain=www.bing.com&sz=64" class="current-engine-icon" id="current-icon" alt="engine">
+          
+          <svg class="engine-svg active" id="icon-bing" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.31 2L3 4.29V20.5L10.58 22L19.29 17.5V5.5L10.58 9.5V17L7.31 15.5V6.5L5.31 2Z" fill="#00809D"/></svg>
+          
+          <svg class="engine-svg" id="icon-google" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.35 11.1H12.18V13.83H18.69C18.36 17.64 15.19 19.27 12.19 19.27C8.36 19.27 5 16.25 5 12C5 7.9 8.2 4.73 12.2 4.73C15.29 4.73 17.1 6.7 17.1 6.7L19 4.72C19 4.72 16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12C2.03 17.05 6.16 22 12.25 22C17.6 22 21.5 18.33 21.5 12.91C21.5 11.76 21.35 11.1 21.35 11.1Z" fill="#EA4335"/><path d="M21.35 11.1H12.18V13.83H18.69C18.36 17.64 15.19 19.27 12.19 19.27C8.36 19.27 5 16.25 5 12C5 7.9 8.2 4.73 12.2 4.73C15.29 4.73 17.1 6.7 17.1 6.7L19 4.72C19 4.72 16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12C2.03 17.05 6.16 22 12.25 22C17.6 22 21.5 18.33 21.5 12.91C21.5 11.76 21.35 11.1 21.35 11.1Z" fill="#4285F4" fill-opacity="0.2"/></svg>
+          
+          <svg class="engine-svg" id="icon-baidu" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.93 7.8C12.59 10.99 15.23 13.56 18.25 13.25C20.67 13 22.38 10.87 21.82 8.5C21.41 6.79 19.96 5.39 18.25 5C15.23 4.31 12.72 6.64 12.93 7.8ZM7.07 14.18C7.42 12.63 6.2 11.14 4.67 11.14C2.96 11.14 1.7 12.87 2.18 14.5C2.56 15.78 3.82 16.57 5.12 16.36C6.31 16.16 7.15 15.17 7.07 14.18ZM10.5 13.9C10.79 12.44 9.61 11.02 8.16 11.02C6.54 11.02 5.37 12.65 5.8 14.18C6.15 15.42 7.37 16.2 8.63 15.99C9.77 15.8 10.59 14.86 10.5 13.9ZM18.93 16.36C20.23 16.57 21.49 15.78 21.87 14.5C22.35 12.87 21.09 11.14 19.38 11.14C17.85 11.14 16.63 12.63 16.98 14.18C16.9 15.17 17.74 16.16 18.93 16.36ZM12.05 14.28C10.66 14.28 9.53 15.42 9.53 16.82C9.53 18.22 10.66 19.36 12.05 19.36C13.44 19.36 14.57 18.22 14.57 16.82C14.57 15.42 13.44 14.28 12.05 14.28Z" fill="#2932E1"/></svg>
+
           <i class="fas fa-chevron-down selector-arrow"></i>
+          
           <div class="engine-dropdown" id="engine-dropdown">
             <div class="engine-option selected" data-engine="bing">
-              <img src="https://www.google.com/s2/favicons?domain=www.bing.com&sz=64" class="engine-icon" alt="bing"> 必应
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.31 2L3 4.29V20.5L10.58 22L19.29 17.5V5.5L10.58 9.5V17L7.31 15.5V6.5L5.31 2Z" fill="#00809D"/></svg> 必应
             </div>
             <div class="engine-option" data-engine="google">
-              <img src="https://www.google.com/s2/favicons?domain=www.google.com&sz=64" class="engine-icon" alt="google"> Google
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.35 11.1H12.18V13.83H18.69C18.36 17.64 15.19 19.27 12.19 19.27C8.36 19.27 5 16.25 5 12C5 7.9 8.2 4.73 12.2 4.73C15.29 4.73 17.1 6.7 17.1 6.7L19 4.72C19 4.72 16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12C2.03 17.05 6.16 22 12.25 22C17.6 22 21.5 18.33 21.5 12.91C21.5 11.76 21.35 11.1 21.35 11.1Z" fill="#EA4335"/></svg> Google
             </div>
             <div class="engine-option" data-engine="baidu">
-              <img src="https://www.google.com/s2/favicons?domain=www.baidu.com&sz=64" class="engine-icon" alt="baidu"> 百度
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.93 7.8C12.59 10.99 15.23 13.56 18.25 13.25C20.67 13 22.38 10.87 21.82 8.5C21.41 6.79 19.96 5.39 18.25 5C15.23 4.31 12.72 6.64 12.93 7.8Z" fill="#2932E1"/></svg> 百度
             </div>
           </div>
         </div>
@@ -361,244 +180,137 @@
     </div>
 
     <div class="site-grid">
-      <a href="https://www.bing.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.bing.com&sz=128" alt="bing"></div><div class="site-name">必应搜索</div></a>
-      <a href="https://www.doubao.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.doubao.com&sz=128" alt="doubao"></div><div class="site-name">豆包</div></a>
-      <a href="https://www.deepseek.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.deepseek.com&sz=128" alt="deepseek"></div><div class="site-name">DeepSeek</div></a>
-      <a href="https://yuanbao.tencent.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=yuanbao.tencent.com&sz=128" alt="yuanbao"></div><div class="site-name">腾讯元宝</div></a>
-      <a href="https://kimi.moonshot.cn" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=kimi.moonshot.cn&sz=128" alt="kimi"></div><div class="site-name">Kimi</div></a>
-      <a href="https://gemini.google.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="gemini"></div><div class="site-name">Gemini</div></a>
-      <a href="https://www.youtube.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.youtube.com&sz=128" alt="youtube"></div><div class="site-name">YouTube</div></a>
-      <a href="https://www.jrkan2023.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.jrkan2023.com&sz=128" alt="jrkan"></div><div class="site-name">JRKAN直播</div></a>
-      <a href="https://www.zhibo8.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.zhibo8.com&sz=128" alt="zhibo8"></div><div class="site-name">直播吧</div></a>
-      <a href="https://www.bilibili.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.bilibili.com&sz=128" alt="bilibili"></div><div class="site-name">哔哩哔哩</div></a>
-      <a href="https://github.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=128" alt="github"></div><div class="site-name">GitHub</div></a>
-      <a href="https://www.jd.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.jd.com&sz=128" alt="jd"></div><div class="site-name">京东</div></a>
-      <a href="https://www.leijing.xyz/index" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.leijing.xyz&sz=128" alt="leijing"></div><div class="site-name">雷鲸小站</div></a>
-      <a href="https://www.haimianxz.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=www.haimianxz.com&sz=128" alt="haimian"></div><div class="site-name">海绵小站</div></a>
-      <a href="https://dash.cloudflare.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=dash.cloudflare.com&sz=128" alt="cloudflare"></div><div class="site-name">Cloudflare</div></a>
-      <a href="https://my.dnshe.com/clientarea.php" target="_blank" class="site-item"><div class="site-icon"><img src="https://www.google.com/s2/favicons?domain=my.dnshe.com&sz=128" alt="dnshe"></div><div class="site-name">DNSHE</div></a>
+      <a href="https://www.bing.com" target="_blank" class="site-item">
+        <div class="site-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:34px;height:34px;"><path d="M5.31 2L3 4.29V20.5L10.58 22L19.29 17.5V5.5L10.58 9.5V17L7.31 15.5V6.5L5.31 2Z" fill="#00809D"/></svg>
+        </div>
+        <div class="site-name">必应搜索</div>
+      </a>
+
+      <a href="https://www.google.com" target="_blank" class="site-item">
+        <div class="site-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:34px;height:34px;"><path d="M21.35 11.1H12.18V13.83H18.69C18.36 17.64 15.19 19.27 12.19 19.27C8.36 19.27 5 16.25 5 12C5 7.9 8.2 4.73 12.2 4.73C15.29 4.73 17.1 6.7 17.1 6.7L19 4.72C19 4.72 16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12C2.03 17.05 6.16 22 12.25 22C17.6 22 21.5 18.33 21.5 12.91C21.5 11.76 21.35 11.1 21.35 11.1Z" fill="#EA4335"/><path d="M21.35 11.1H12.18V13.83H18.69C18.36 17.64 15.19 19.27 12.19 19.27C8.36 19.27 5 16.25 5 12C5 7.9 8.2 4.73 12.2 4.73C15.29 4.73 17.1 6.7 17.1 6.7L19 4.72C19 4.72 16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12C2.03 17.05 6.16 22 12.25 22C17.6 22 21.5 18.33 21.5 12.91C21.5 11.76 21.35 11.1 21.35 11.1Z" fill="#4285F4" fill-opacity="0.2"/></svg>
+        </div>
+        <div class="site-name">Google</div>
+      </a>
+
+      <a href="https://www.baidu.com" target="_blank" class="site-item">
+        <div class="site-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:34px;height:34px;"><path d="M12.93 7.8C12.59 10.99 15.23 13.56 18.25 13.25C20.67 13 22.38 10.87 21.82 8.5C21.41 6.79 19.96 5.39 18.25 5C15.23 4.31 12.72 6.64 12.93 7.8ZM7.07 14.18C7.42 12.63 6.2 11.14 4.67 11.14C2.96 11.14 1.7 12.87 2.18 14.5C2.56 15.78 3.82 16.57 5.12 16.36C6.31 16.16 7.15 15.17 7.07 14.18ZM10.5 13.9C10.79 12.44 9.61 11.02 8.16 11.02C6.54 11.02 5.37 12.65 5.8 14.18C6.15 15.42 7.37 16.2 8.63 15.99C9.77 15.8 10.59 14.86 10.5 13.9ZM18.93 16.36C20.23 16.57 21.49 15.78 21.87 14.5C22.35 12.87 21.09 11.14 19.38 11.14C17.85 11.14 16.63 12.63 16.98 14.18C16.9 15.17 17.74 16.16 18.93 16.36ZM12.05 14.28C10.66 14.28 9.53 15.42 9.53 16.82C9.53 18.22 10.66 19.36 12.05 19.36C13.44 19.36 14.57 18.22 14.57 16.82C14.57 15.42 13.44 14.28 12.05 14.28Z" fill="#2932E1"/></svg>
+        </div>
+        <div class="site-name">百度</div>
+      </a>
+
+      <a href="https://www.doubao.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/www.doubao.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-robot" style="color:#ff6b6b;"></i></div><div class="site-name">豆包</div></a>
+      <a href="https://www.deepseek.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/www.deepseek.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-brain" style="color:#4ecdc4;"></i></div><div class="site-name">DeepSeek</div></a>
+      <a href="https://yuanbao.tencent.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/yuanbao.tencent.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-gem" style="color:#1e88e5;"></i></div><div class="site-name">腾讯元宝</div></a>
+      <a href="https://kimi.moonshot.cn" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/kimi.moonshot.cn" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-moon" style="color:#333;"></i></div><div class="site-name">Kimi</div></a>
+      <a href="https://gemini.google.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/gemini.google.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-star" style="color:#4285f4;"></i></div><div class="site-name">Gemini</div></a>
+      <a href="https://www.youtube.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/www.youtube.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fab fa-youtube" style="color:#ff0000;"></i></div><div class="site-name">YouTube</div></a>
+      <a href="https://www.jrkan2023.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/www.jrkan2023.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-tv" style="color:#ff9800;"></i></div><div class="site-name">JRKAN直播</div></a>
+      <a href="https://www.zhibo8.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/www.zhibo8.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-futbol" style="color:#2196f3;"></i></div><div class="site-name">直播吧</div></a>
+      <a href="https://www.bilibili.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/www.bilibili.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fab fa-bilibili" style="color:#fb7299;"></i></div><div class="site-name">哔哩哔哩</div></a>
+      <a href="https://github.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/github.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fab fa-github" style="color:#333;"></i></div><div class="site-name">GitHub</div></a>
+      <a href="https://www.jd.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/www.jd.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-shopping-cart" style="color:#e6162d;"></i></div><div class="site-name">京东</div></a>
+      <a href="https://www.leijing.xyz/index" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/www.leijing.xyz" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-gamepad" style="color:#4caf50;"></i></div><div class="site-name">雷鲸小站</div></a>
+      <a href="https://www.haimianxz.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/www.haimianxz.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-cube" style="color:#9c27b0;"></i></div><div class="site-name">海绵小站</div></a>
+      <a href="https://dash.cloudflare.com" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/dash.cloudflare.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-cloud" style="color:#f44336;"></i></div><div class="site-name">Cloudflare</div></a>
+      <a href="https://my.dnshe.com/clientarea.php" target="_blank" class="site-item"><div class="site-icon"><img src="https://ico.51.la/my.dnshe.com" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><i class="fas fa-server" style="color:#3f51b5;"></i></div><div class="site-name">DNSHE</div></a>
     </div>
   </div>
 
   <script>
-    /* --- 全局逻辑 --- */
+    /* 1. 时间/农历/一言 */
     function getGreeting() {
-      const hour = new Date().getHours();
-      if (hour < 6) return '夜深了，注意休息 🌙';
-      if (hour < 9) return '早上好，新的一天加油 ☀️';
-      if (hour < 12) return '上午好，工作顺利 ☕';
-      if (hour < 14) return '中午好，记得午休 🍱';
-      if (hour < 17) return '下午好，继续保持 🚀';
-      if (hour < 19) return '傍晚好，放松一下 🌇';
+      const h = new Date().getHours();
+      if(h<6)return '夜深了，注意休息 🌙'; if(h<9)return '早上好，新的一天加油 ☀️';
+      if(h<12)return '上午好，工作顺利 ☕'; if(h<14)return '中午好，记得午休 🍱';
+      if(h<17)return '下午好，继续保持 🚀'; if(h<19)return '傍晚好，放松一下 🌇';
       return '晚上好，享受生活 ✨';
     }
-
-    function getLunarDate(date) { const weeks = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']; return `${weeks[date.getDay()]}`; }
-    function updateTime() {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
-      const year = now.getFullYear();
-      const month = (now.getMonth() + 1).toString().padStart(2, '0');
-      const day = now.getDate().toString().padStart(2, '0');
-      const weekStr = getLunarDate(now);
-      
-      document.getElementById('clock').textContent = timeStr;
-      document.getElementById('date').textContent = `${year}年${month}月${day}日 ${weekStr}`;
-      
-      try {
-        if(window.Lunar) {
-          const d = Lunar.fromDate(now);
-          const lunarStr = `农历 ${d.getYearInGanZhi()}年 [${d.getYearShengXiao()}] ${d.getMonthInChinese()}月${d.getDayInChinese()}`;
-          document.getElementById('lunar').textContent = lunarStr;
-        }
-      } catch(e) {}
-
-      if(now.getSeconds() === 0) { document.getElementById('greeting').textContent = getGreeting(); }
+    function updateTime(){
+      const n=new Date(); document.getElementById('clock').textContent=n.toLocaleTimeString('zh-CN',{hour12:false});
+      const w=['日','一','二','三','四','五','六'];
+      document.getElementById('date').textContent=`${n.getFullYear()}年${(n.getMonth()+1).toString().padStart(2,'0')}月${n.getDate().toString().padStart(2,'0')}日 星期${w[n.getDay()]}`;
+      if(window.Lunar){try{const d=Lunar.fromDate(n);document.getElementById('lunar').textContent=`农历 ${d.getYearInGanZhi()}年 [${d.getYearShengXiao()}] ${d.getMonthInChinese()}月${d.getDayInChinese()}`;}catch(e){}}
+      if(n.getSeconds()===0)document.getElementById('greeting').textContent=getGreeting();
     }
-    document.getElementById('greeting').textContent = getGreeting();
-    setInterval(updateTime, 1000); updateTime();
-
-    /* --- 1. 每日一言 (Hitokoto) --- */
-    function fetchHitokoto() {
-      fetch('https://v1.hitokoto.cn/?c=i&c=d') // i=诗词, d=文学
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('hitokoto-text').textContent = data.hitokoto;
-        })
-        .catch(() => {
-          document.getElementById('hitokoto-text').textContent = "生活明朗，万物可爱。";
-        });
-    }
-    document.getElementById('hitokoto-box').addEventListener('click', fetchHitokoto);
-    fetchHitokoto(); // 初始加载
-
-    /* --- 2. 侧边栏与待办逻辑 --- */
-    function toggleDrawer(id) {
-      const drawer = document.getElementById(id);
-      const isOpen = drawer.classList.contains('open');
-      // 关闭所有 drawer
-      document.querySelectorAll('.sidebar-drawer').forEach(d => d.classList.remove('open'));
-      // 如果之前没打开，则打开当前
-      if (!isOpen) drawer.classList.add('open');
-    }
+    document.getElementById('greeting').textContent=getGreeting(); setInterval(updateTime,1000); updateTime();
     
-    document.getElementById('btn-todo').addEventListener('click', (e) => { e.stopPropagation(); toggleDrawer('drawer-todo'); });
-    document.getElementById('btn-hot').addEventListener('click', (e) => { e.stopPropagation(); toggleDrawer('drawer-hot'); });
-    // 点击外部关闭侧边栏
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.sidebar-drawer') && !e.target.closest('.tool-btn')) {
-        document.querySelectorAll('.sidebar-drawer').forEach(d => d.classList.remove('open'));
-      }
-    });
+    function fetchHitokoto(){
+      fetch('https://v1.hitokoto.cn/?c=i&c=d').then(r=>r.json()).then(d=>document.getElementById('hitokoto-text').textContent=d.hitokoto)
+      .catch(()=>document.getElementById('hitokoto-text').textContent="生活明朗，万物可爱。");
+    }
+    document.getElementById('hitokoto-box').addEventListener('click',fetchHitokoto); fetchHitokoto();
 
-    // 待办数据操作
-    let todos = JSON.parse(localStorage.getItem('my_todos') || '[]');
-    const todoListEl = document.getElementById('todo-list');
-    const todoInput = document.getElementById('todo-input');
+    /* 2. 侧边栏(仅待办) */
+    function toggleDrawer(id){
+      const d=document.getElementById(id), isOpen=d.classList.contains('open');
+      document.querySelectorAll('.sidebar-drawer').forEach(el=>el.classList.remove('open'));
+      if(!isOpen) d.classList.add('open');
+    }
+    document.getElementById('btn-todo').addEventListener('click',e=>{e.stopPropagation();toggleDrawer('drawer-todo')});
+    document.addEventListener('click',e=>{if(!e.target.closest('.sidebar-drawer')&&!e.target.closest('.tool-btn')) document.querySelectorAll('.sidebar-drawer').forEach(d=>d.classList.remove('open'))});
 
-    function renderTodos() {
-      todoListEl.innerHTML = '';
-      todos.forEach((todo, index) => {
-        const li = document.createElement('li');
-        li.className = `todo-item ${todo.done ? 'done' : ''}`;
-        li.innerHTML = `
-          <input type="checkbox" class="todo-checkbox" ${todo.done ? 'checked' : ''} onchange="toggleTodo(${index})">
-          <span class="todo-text">${todo.text}</span>
-          <i class="fas fa-trash todo-delete" onclick="deleteTodo(${index})"></i>
-        `;
-        todoListEl.appendChild(li);
+    let todos=JSON.parse(localStorage.getItem('my_todos')||'[]');
+    function renderTodos(){
+      const list=document.getElementById('todo-list'); list.innerHTML='';
+      todos.forEach((t,i)=>{
+        list.innerHTML+=`<li class="todo-item ${t.done?'done':''}"><input type="checkbox" class="todo-checkbox" ${t.done?'checked':''} onchange="toggleTodo(${i})"><span class="todo-text">${t.text}</span><i class="fas fa-trash todo-delete" onclick="deleteTodo(${i})"></i></li>`;
       });
-      localStorage.setItem('my_todos', JSON.stringify(todos));
+      localStorage.setItem('my_todos',JSON.stringify(todos));
     }
+    window.toggleTodo=i=>{todos[i].done=!todos[i].done;renderTodos()}; window.deleteTodo=i=>{todos.splice(i,1);renderTodos()};
+    document.getElementById('todo-add').addEventListener('click',()=>{const v=document.getElementById('todo-input').value.trim();if(v){todos.push({text:v,done:false});document.getElementById('todo-input').value='';renderTodos()}});
+    document.getElementById('todo-input').addEventListener('keypress',e=>{if(e.key==='Enter')document.getElementById('todo-add').click()}); renderTodos();
 
-    window.toggleTodo = function(index) {
-      todos[index].done = !todos[index].done;
-      renderTodos();
-    };
-    window.deleteTodo = function(index) {
-      todos.splice(index, 1);
-      renderTodos();
-    };
-    document.getElementById('todo-add').addEventListener('click', () => {
-      const text = todoInput.value.trim();
-      if(text) { todos.push({ text, done: false }); todoInput.value = ''; renderTodos(); }
-    });
-    todoInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('todo-add').click(); });
-    renderTodos(); // 初始渲染
-
-    /* --- 3. 热搜逻辑 (使用公共接口) --- */
-    async function fetchHotSearch() {
-      const listEl = document.getElementById('hot-list');
-      try {
-        // 使用 oioweb 免费接口
-        const res = await fetch('https://api.oioweb.cn/api/common/HotList?type=weiboHot');
-        const data = await res.json();
-        if(data.code === 200 && data.result) {
-          listEl.innerHTML = '';
-          // 取前15条
-          data.result.slice(0, 15).forEach((item, index) => {
-            const li = document.createElement('li');
-            li.className = 'hot-item';
-            li.innerHTML = `
-              <span class="hot-rank ${index < 3 ? 'top-3' : ''}">${index + 1}</span>
-              <a href="${item.href}" target="_blank" class="hot-link">${item.title}</a>
-              <span class="hot-score">🔥</span>
-            `;
-            listEl.appendChild(li);
-          });
-        } else { throw new Error('API Error'); }
-      } catch(e) {
-        listEl.innerHTML = '<li style="text-align:center;color:#999;">热搜加载失败，请稍后重试</li>';
-      }
-    }
-    // 打开热搜侧边栏时才加载
-    document.getElementById('btn-hot').addEventListener('click', () => {
-       if(!document.getElementById('hot-list').children.length || document.getElementById('hot-list').innerText.includes('正在获取')) {
-         fetchHotSearch();
-       }
-    });
-
-    /* --- 搜索、天气、背景 (保持原样) --- */
+    /* 3. 搜索框逻辑 */
     const searchConfig = {
-      bing: { url: 'https://www.bing.com/search?q=', icon: 'https://www.google.com/s2/favicons?domain=www.bing.com&sz=64', placeholder: '在必应中搜索内容...' },
-      google: { url: 'https://www.google.com/search?q=', icon: 'https://www.google.com/s2/favicons?domain=www.google.com&sz=64', placeholder: '在 Google 中搜索内容...' },
-      baidu: { url: 'https://www.baidu.com/s?wd=', icon: 'https://www.google.com/s2/favicons?domain=www.baidu.com&sz=64', placeholder: '在百度中搜索内容...' }
+      bing: { url: 'https://www.bing.com/search?q=', placeholder: '在必应中搜索内容...' },
+      google: { url: 'https://www.google.com/search?q=', placeholder: '在 Google 中搜索内容...' },
+      baidu: { url: 'https://www.baidu.com/s?wd=', placeholder: '在百度中搜索内容...' }
     };
     let currentEngine = 'bing';
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
     const engineSelector = document.getElementById('engine-selector');
     const engineDropdown = document.getElementById('engine-dropdown');
-    const currentIcon = document.getElementById('current-icon');
-    const searchContainer = document.getElementById('search-container'); 
+    const searchContainer = document.getElementById('search-container');
 
-    function closeMenu() {
-      engineDropdown.classList.remove('show');
-      engineSelector.classList.remove('active');
-      searchContainer.classList.remove('push-content');
-    }
+    function closeMenu(){ engineDropdown.classList.remove('show'); engineSelector.classList.remove('active'); }
+    
     function setEngine(key) {
-      currentEngine = key; const config = searchConfig[key];
-      currentIcon.src = config.icon; searchInput.placeholder = config.placeholder;
-      document.querySelectorAll('.engine-option').forEach(opt => {
-        if(opt.dataset.engine === key) opt.classList.add('selected'); else opt.classList.remove('selected');
+      currentEngine = key;
+      searchInput.placeholder = searchConfig[key].placeholder;
+      
+      // 切换搜索框顶部显示的 SVG
+      document.querySelectorAll('.engine-svg').forEach(el => el.classList.remove('active'));
+      document.getElementById('icon-' + key).classList.add('active');
+      
+      document.querySelectorAll('.engine-option').forEach(o=>{
+        if(o.dataset.engine===key) o.classList.add('selected'); else o.classList.remove('selected');
       });
       closeMenu();
     }
-    function doSearch() {
-      const val = searchInput.value.trim();
-      if(val) { window.open(searchConfig[currentEngine].url + encodeURIComponent(val), '_blank'); searchInput.value = ''; }
-    }
-    engineSelector.addEventListener('click', (e) => {
+
+    document.querySelectorAll('.engine-option').forEach(item => {
+      item.addEventListener('click', e => {
+        e.stopPropagation();
+        setEngine(item.dataset.engine);
+      });
+    });
+
+    engineSelector.addEventListener('click',e=>{
       e.stopPropagation();
-      const isShowing = engineDropdown.classList.contains('show');
-      if (isShowing) { closeMenu(); } else { engineDropdown.classList.add('show'); engineSelector.classList.add('active'); searchContainer.classList.add('push-content'); }
+      if(engineDropdown.classList.contains('show')) closeMenu();
+      else { engineDropdown.classList.add('show'); engineSelector.classList.add('active'); }
     });
-    document.querySelectorAll('.engine-option').forEach(item => { item.addEventListener('click', (e) => { e.stopPropagation(); setEngine(item.dataset.engine); }); });
+    
     document.addEventListener('click', closeMenu);
-    searchBtn.addEventListener('click', doSearch);
-    searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') doSearch(); });
-
-    const weatherMap = { 0: {text:'晴',icon:'fa-sun',color:'#ff9800'}, 1: {text:'多云',icon:'fa-cloud-sun',color:'#ff9800'}, 2: {text:'阴',icon:'fa-cloud',color:'#78909c'}, 3: {text:'阴',icon:'fa-cloud',color:'#78909c'}, 45: {text:'雾',icon:'fa-smog',color:'#90a4ae'}, 51: {text:'小雨',icon:'fa-cloud-rain',color:'#4285f4'}, 53: {text:'中雨',icon:'fa-cloud-showers-heavy',color:'#1976d2'}, 61: {text:'雨',icon:'fa-umbrella',color:'#1565c0'}, 63: {text:'大雨',icon:'fa-umbrella',color:'#0d47a1'}, 80: {text:'阵雨',icon:'fa-cloud-rain',color:'#4285f4'}, 95: {text:'雷雨',icon:'fa-bolt',color:'#fdd835'} };
-    async function initWeather() {
-      const locText = document.getElementById('location-text');
-      const weaText = document.getElementById('weather-text');
-      const weaIcon = document.querySelector('.weather-icon');
-      const refreshBtn = document.getElementById('refresh-btn');
-      refreshBtn.classList.add('fa-spin');
-      try {
-        let lat = 25.83, lon = 114.93, city = '赣州市';
-        try { const ipRes = await fetch('https://ipapi.co/json/'); if(ipRes.ok) { const ipData = await ipRes.json(); lat = ipData.latitude; lon = ipData.longitude; city = ipData.city || ipData.region || '本地'; } } catch(e) { console.log('IP定位失败'); }
-        locText.textContent = city;
-        document.getElementById('location-box').href = `https://www.bing.com/maps?q=${city}`;
-        const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`);
-        const wData = await wRes.json();
-        if (wData.current_weather) {
-          const info = weatherMap[wData.current_weather.weathercode] || {text:'未知',icon:'fa-cloud',color:'#78909c'};
-          weaText.textContent = `${info.text} ${wData.current_weather.temperature}°C`;
-          weaIcon.className = `fas ${info.icon} weather-icon`;
-          weaIcon.style.color = info.color;
-          document.getElementById('weather-box').href = `https://www.bing.com/search?q=${city}天气`;
-        }
-      } catch (error) { weaText.textContent = '暂无数据'; } finally { setTimeout(() => refreshBtn.classList.remove('fa-spin'), 1000); }
-    }
-    document.getElementById('refresh-btn').addEventListener('click', initWeather);
-    window.addEventListener('load', initWeather);
-
-    const bgs = [ 
-      { url: 'https://media.giphy.com/media/3o7aTskHEUdgCQAXde/giphy.gif', color: 'linear-gradient(135deg, rgba(224, 247, 250, 0.9), rgba(178, 235, 242, 0.85))' },
-      { url: 'https://media.giphy.com/media/l3vR85PnGsBwu1PFK/giphy.gif', color: 'linear-gradient(135deg, rgba(20, 20, 40, 0.8), rgba(40, 40, 80, 0.8))' },
-      { url: 'https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif', color: 'linear-gradient(135deg, rgba(255, 240, 240, 0.9), rgba(255, 220, 220, 0.85))' } 
-    ];
-    let bgIndex = 0;
-    document.getElementById('bg-toggle').addEventListener('click', () => {
-        bgIndex = (bgIndex + 1) % bgs.length;
-        document.getElementById('bg-animation').style.backgroundImage = `url('${bgs[bgIndex].url}')`;
-        document.getElementById('bg-overlay').style.background = bgs[bgIndex].color;
-        const isDark = bgIndex === 1; 
-        document.querySelector('.welcome-text').style.color = isDark ? '#82b1ff' : '#1565c0';
-        document.querySelector('.clock').style.color = isDark ? '#fff' : '#263238';
+    searchBtn.addEventListener('click', ()=>{ 
+      const v=searchInput.value.trim(); if(v){window.open(searchConfig[currentEngine].url+encodeURIComponent(v),'_blank');searchInput.value=''} 
     });
+    searchInput.addEventListener('keypress',e=>{if(e.key==='Enter')searchBtn.click()});
   </script>
 </body>
 </html>
